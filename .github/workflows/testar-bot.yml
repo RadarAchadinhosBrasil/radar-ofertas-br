@@ -2,6 +2,7 @@
 name: Publicar ofertas automaticamente
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: "0 12 * * *"
     - cron: "0 15 * * *"
@@ -13,7 +14,6 @@ permissions:
 
 jobs:
   publicar:
-    if: github.event_name == 'schedule'
     runs-on: ubuntu-latest
     steps:
       - name: Baixar arquivos
@@ -28,6 +28,7 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Publicar oferta
+        if: github.event_name == 'schedule'
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHANNEL: "@radardeofertasbr_oficial"
