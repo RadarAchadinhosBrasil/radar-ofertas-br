@@ -1,11 +1,11 @@
 name: Publicar ofertas automaticamente
 
 on:
-  schedule:
+schedule:
     - cron: "0 12 * * *"
     - cron: "0 15 * * *"
     - cron: "0 18 * * *"
- - cron: "7 21 * * *"
+    - cron: "7 21 * * *"
   workflow_dispatch:
 
 jobs:
