@@ -23,8 +23,9 @@ jobs:
       - name: Instalar dependências
         run: pip install -r requirements.txt
 
-      - name: Publicar uma oferta
+      - name: Publicar oferta do horário
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHANNEL: "@radardeofertasbr_oficial"
+          SLOT_UTC: ${{ github.event.schedule }}
         run: python bot.py
