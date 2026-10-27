@@ -1,0 +1,29 @@
+name: Testar bot do Telegram
+
+on:
+  workflow_dispatch:
+
+jobs:
+  testar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar arquivos do projeto
+        uses: actions/checkout@v4
+
+      - name: Preparar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar dependências
+        run: pip install -r requirements.txt
+
+      - name: Verificar arquivos
+        run: |
+          python -c "import csv; f=open('produtos.csv', encoding='utf-8-sig'); r=list(csv.DictReader(f)); print('Produtos encontrados:', len(r)); print('Colunas:', ', '.join(r[0].keys()) if r else 'Nenhuma')"
+
+      - name: Testar envio de uma oferta
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHANNEL: "@radardeofertasbr_oficial"
+        run: python bot.py
