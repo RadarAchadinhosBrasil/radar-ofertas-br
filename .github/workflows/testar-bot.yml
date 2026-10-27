@@ -1,7 +1,7 @@
 
 name: Publicar ofertas automaticamente
 
-"on":
+on:
   schedule:
     - cron: "0 12 * * *"
     - cron: "0 15 * * *"
