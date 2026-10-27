@@ -1,10 +1,15 @@
-name: Testar bot do Telegram
+name: Publicar ofertas automaticamente
 
 on:
+  schedule:
+    - cron: "0 12 * * *"
+    - cron: "0 15 * * *"
+    - cron: "0 18 * * *"
+    - cron: "0 21 * * *"
   workflow_dispatch:
 
 jobs:
-  testar:
+  publicar:
     runs-on: ubuntu-latest
     steps:
       - name: Baixar arquivos do projeto
@@ -18,11 +23,7 @@ jobs:
       - name: Instalar dependências
         run: pip install -r requirements.txt
 
-      - name: Verificar arquivos
-        run: |
-          python -c "import csv; f=open('produtos.csv', encoding='utf-8-sig'); r=list(csv.DictReader(f)); print('Produtos encontrados:', len(r)); print('Colunas:', ', '.join(r[0].keys()) if r else 'Nenhuma')"
-
-      - name: Testar envio de uma oferta
+      - name: Publicar uma oferta
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHANNEL: "@radardeofertasbr_oficial"
