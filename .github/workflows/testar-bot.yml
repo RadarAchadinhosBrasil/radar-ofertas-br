@@ -36,4 +36,4 @@ jobs:
 
       - name: Informar execução manual
         if: github.event_name == 'workflow_dispatch'
-        run: echo "Execução manual: nenhuma oferta foi publicada."
+run: 'echo "Execução manual: nenhuma oferta foi publicada."'
