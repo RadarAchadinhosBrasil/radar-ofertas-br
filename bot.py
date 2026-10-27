@@ -9,15 +9,14 @@ TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
 CHANNEL = os.environ.get(
     "TELEGRAM_CHANNEL", "@radardeofertasbr_oficial"
 ).strip()
+HORARIO_AGENDADO = os.environ.get("SLOT_UTC", "").strip()
 CSV_PATH = Path(__file__).with_name("produtos.csv")
 
-# Horários UTC do agendamento: 12h, 15h, 18h e 21h.
-# No horário de Brasília, correspondem a 9h, 12h, 15h e 18h.
-INDICE_POR_HORA_UTC = {
-    12: 0,
-    15: 1,
-    18: 2,
-    21: 3,
+HORARIOS = {
+    "0 12 * * *": 0,
+    "0 15 * * *": 1,
+    "0 18 * * *": 2,
+    "0 21 * * *": 3,
 }
 
 
@@ -63,14 +62,20 @@ async def main():
     if not produtos:
         raise SystemExit("O arquivo produtos.csv não tem produtos.")
 
-    agora = datetime.now(timezone.utc)
-    indice = INDICE_POR_HORA_UTC.get(agora.hour, 0)
-
-    if indice >= len(produtos):
+    if not HORARIO_AGENDADO:
         raise SystemExit(
-            "Não há produto cadastrado para este horário. "
-            "Confira o arquivo produtos.csv."
+            "Execução manual bloqueada para evitar publicação inesperada. "
+            "Aguarde o próximo horário automático."
         )
+
+    if HORARIO_AGENDADO not in HORARIOS:
+        raise SystemExit("Horário de agendamento não reconhecido.")
+
+    slot = HORARIOS[HORARIO_AGENDADO]
+
+    # Rodízio diário pelos produtos, independentemente de atrasos do GitHub.
+    dia = datetime.now(timezone.utc).date().toordinal()
+    indice = (dia * 4 + slot) % len(produtos)
 
     produto = produtos[indice]
     if not produto.get("link_afiliado", "").strip():
