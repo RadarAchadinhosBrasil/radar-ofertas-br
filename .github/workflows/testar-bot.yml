@@ -7,16 +7,16 @@ on:
     - cron: "0 15 * * *"
     - cron: "0 18 * * *"
     - cron: "7 21 * * *"
-  workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
   publicar:
+    if: github.event_name == 'schedule'
     runs-on: ubuntu-latest
     steps:
-      - name: Baixar arquivos do projeto
+      - name: Baixar arquivos
         uses: actions/checkout@v4
 
       - name: Preparar Python
@@ -24,17 +24,12 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Instalar dependências
+      - name: Instalar dependencias
         run: pip install -r requirements.txt
 
       - name: Publicar oferta
-        if: github.event_name == 'schedule'
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHANNEL: "@radardeofertasbr_oficial"
           SLOT_UTC: ${{ github.event.schedule }}
         run: python bot.py
-
-      - name: Finalizar execução manual sem publicar
-        if: github.event_name == 'workflow_dispatch'
-        run: echo "Execução manual: nenhuma oferta foi publicada."
