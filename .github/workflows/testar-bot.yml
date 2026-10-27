@@ -1,3 +1,4 @@
+
 name: Publicar ofertas automaticamente
 
 on:
@@ -34,6 +35,6 @@ jobs:
           SLOT_UTC: ${{ github.event.schedule }}
         run: python bot.py
 
-      - name: Informar execução manual
+      - name: Finalizar execução manual sem publicar
         if: github.event_name == 'workflow_dispatch'
-run: 'echo "Execução manual: nenhuma oferta foi publicada."'
+        run: echo "Execução manual: nenhuma oferta foi publicada."
