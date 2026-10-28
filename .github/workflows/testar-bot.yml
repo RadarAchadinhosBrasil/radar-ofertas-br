@@ -34,3 +34,35 @@ jobs:
           TELEGRAM_CHANNEL: "@radardeofertasbr_oficial"
           SLOT_UTC: ${{ github.event.schedule }}
         run: python bot.py
+
+  diagnostico_csv:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar arquivos
+        uses: actions/checkout@v4
+
+      - name: Preparar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Diagnosticar CSV sem publicar
+        run: |
+          python - <<'PY'
+          import csv
+          from pathlib import Path
+
+          path = Path("produtos.csv")
+
+          with path.open("r", encoding="utf-8-sig", newline="") as f:
+              reader = csv.DictReader(f, delimiter=",")
+              print("CABEÇALHOS:", repr(reader.fieldnames))
+
+              primeiro = next(reader, None)
+              print("PRIMEIRO PRODUTO:", repr(primeiro))
+
+              if primeiro:
+                  for campo in ("produto", "preco_atual_brl", "link_afiliado"):
+                      print(f"{campo} = {primeiro.get(campo)!r}")
+          PY
