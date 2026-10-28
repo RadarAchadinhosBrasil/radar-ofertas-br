@@ -22,25 +22,55 @@ HORARIOS = {
 
 
 def carregar_produtos():
+    # Lê o CSV com detecção de separador e normalização dos cabeçalhos.
+    # Isso evita falhas quando o arquivo é salvo com ;, BOM ou espaços.
     with CSV_PATH.open("r", encoding="utf-8-sig", newline="") as f:
-        linhas = [linha for linha in f if linha.strip()]
+        conteudo = f.read()
 
-    if not linhas:
+    if not conteudo.strip():
         raise SystemExit("Erro: produtos.csv está vazio.")
 
-    leitor = csv.DictReader(linhas, delimiter=",")
+    try:
+        dialect = csv.Sniffer().sniff(conteudo[:8192], delimiters=",;\\t")
+        delimitador = dialect.delimiter
+    except csv.Error:
+        delimitador = ","
 
+    leitor = csv.DictReader(conteudo.splitlines(), delimiter=delimitador)
     if not leitor.fieldnames:
         raise SystemExit("Erro: o CSV está sem cabeçalho.")
 
-    leitor.fieldnames = [
-        nome.strip().lower() if nome else ""
-        for nome in leitor.fieldnames
-    ]
+    def normalizar_cabecalho(valor):
+        return (valor or "").strip().lower().replace("\\ufeff", "").replace(" ", "_")
 
-    produtos = list(leitor)
+    cabecalhos = [normalizar_cabecalho(nome) for nome in leitor.fieldnames]
+    aliases = {
+        "nome": "produto",
+        "produto": "produto",
+        "preco": "preco_atual_brl",
+        "preco_atual": "preco_atual_brl",
+        "preco_atual_brl": "preco_atual_brl",
+        "preco_anterior": "preco_anterior_brl",
+        "preco_anterior_brl": "preco_anterior_brl",
+        "link": "link_afiliado",
+        "link_afiliado": "link_afiliado",
+        "url": "link_afiliado",
+    }
 
-    print("CABEÇALHOS LIDOS:", repr(leitor.fieldnames))
+    produtos = []
+    for linha in leitor:
+        produto = {}
+        for chave, valor in linha.items():
+            chave_normalizada = normalizar_cabecalho(chave)
+            destino = aliases.get(chave_normalizada, chave_normalizada)
+            if destino and valor is not None:
+                produto[destino] = valor.strip() if isinstance(valor, str) else valor
+        if any((valor or "").strip() for valor in produto.values() if isinstance(valor, str)):
+            produtos.append(produto)
+
+    print("SEPARADOR CSV:", repr(delimitador))
+    print("CABEÇALHOS NORMALIZADOS:", repr(cabecalhos))
+    print("TOTAL DE PRODUTOS LIDOS:", len(produtos))
     print("PRIMEIRO PRODUTO LIDO:", repr(produtos[0] if produtos else None))
 
     return produtos
