@@ -48,21 +48,22 @@ jobs:
           python-version: "3.12"
 
       - name: Diagnosticar CSV sem publicar
+       
         run: |
           python - <<'PY'
           import csv
           from pathlib import Path
 
           path = Path("produtos.csv")
-
           with path.open("r", encoding="utf-8-sig", newline="") as f:
-              reader = csv.DictReader(f, delimiter=",")
-              print("CABEÇALHOS:", repr(reader.fieldnames))
+              linhas = [linha for linha in f if linha.strip()]
 
-              primeiro = next(reader, None)
-              print("PRIMEIRO PRODUTO:", repr(primeiro))
+          reader = csv.DictReader(linhas, delimiter=",")
+          print("CABEÇALHOS:", repr(reader.fieldnames))
+          primeiro = next(reader, None)
+          print("PRIMEIRO PRODUTO:", repr(primeiro))
 
-              if primeiro:
-                  for campo in ("produto", "preco_atual_brl", "link_afiliado"):
-                      print(f"{campo} = {primeiro.get(campo)!r}")
+          if reader.fieldnames:
+              print("TOTAL DE PRODUTOS:", 1 + sum(1 for _ in reader) if primeiro else 0)
           PY
+
