@@ -71,7 +71,7 @@ def montar_mensagem(produto):
         "⚠️ Preço e disponibilidade podem mudar. Confira no anúncio.",
     ]
     return "\n".join(linhas)
-S
+
 async def main():
     print("VERSAO DO BOT: diagnostico CSV v2")
 
