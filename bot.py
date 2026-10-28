@@ -1,3 +1,4 @@
+
 import os
 import csv
 import asyncio
@@ -13,17 +14,15 @@ HORARIO_AGENDADO = os.environ.get("SLOT_UTC", "").strip()
 CSV_PATH = Path(__file__).with_name("produtos.csv")
 
 HORARIOS = {
-    "0 12 * * *": 0,
-    "0 15 * * *": 1,
-    "0 18 * * *": 2,
-    "0 21 * * *": 3,
+    "0 12 * * *": 8,
+    "0 15 * * *": 8,
+    "0 18 * * *": 7,
+    "0 21 * * *": 7,
 }
-
 
 def carregar_produtos():
     with CSV_PATH.open("r", encoding="utf-8-sig", newline="") as f:
         return list(csv.DictReader(f))
-
 
 def formatar_preco(valor):
     try:
@@ -33,17 +32,18 @@ def formatar_preco(valor):
     except (ValueError, TypeError):
         return valor or "Consultar anúncio"
 
-
 def montar_mensagem(produto):
     nome = (produto.get("produto") or "Oferta").strip()
     atual = formatar_preco(produto.get("preco_atual_brl", ""))
-    anterior_raw = produto.get("preco_anterior_brl", "")
+    anterior_raw = (produto.get("preco_anterior_brl") or "").strip()
     link = (produto.get("link_afiliado") or "").strip()
-    anterior = formatar_preco(anterior_raw) if anterior_raw else ""
 
-    linhas = [nome, ""]
-    if anterior:
+    linhas = [f"🔥 {nome}", ""]
+
+    if anterior_raw:
+        anterior = formatar_preco(anterior_raw)
         linhas.append(f"De: ~{anterior}~")
+
     linhas += [
         f"💰 Por: {atual}",
         "",
@@ -53,45 +53,67 @@ def montar_mensagem(produto):
     ]
     return "\n".join(linhas)
 
-
 async def main():
     if not TOKEN:
         raise SystemExit("Falta configurar o segredo TELEGRAM_BOT_TOKEN.")
 
-    produtos = carregar_produtos()
-    if not produtos:
-        raise SystemExit("O arquivo produtos.csv não tem produtos.")
-
     if not HORARIO_AGENDADO:
         raise SystemExit(
-            "Execução manual bloqueada para evitar publicação inesperada. "
-            "Aguarde o próximo horário automático."
+            "Execução manual bloqueada para evitar publicações inesperadas."
         )
 
     if HORARIO_AGENDADO not in HORARIOS:
         raise SystemExit("Horário de agendamento não reconhecido.")
 
-    slot = HORARIOS[HORARIO_AGENDADO]
+    produtos = carregar_produtos()
 
-    # Rodízio diário pelos produtos, independentemente de atrasos do GitHub.
+    if len(produtos) < 30:
+        raise SystemExit(
+            f"Esperados 30 produtos; encontrados {len(produtos)}."
+        )
+
+    if any(
+        not (p.get("produto") or "").strip()
+        or not (p.get("link_afiliado") or "").strip()
+        or not (p.get("preco_atual_brl") or "").strip()
+        for p in produtos
+    ):
+        raise SystemExit(
+            "Há produto sem nome, preço atual ou link de afiliado."
+        )
+
+    ordem = list(HORARIOS.keys())
+    slot = ordem.index(HORARIO_AGENDADO)
+    quantidade = HORARIOS[HORARIO_AGENDADO]
+    inicio = sum(HORARIOS[h] for h in ordem[:slot])
+
     dia = datetime.now(timezone.utc).date().toordinal()
-    indice = (dia * 4 + slot) % len(produtos)
+    base = dia % len(produtos)
 
-    produto = produtos[indice]
-    if not produto.get("link_afiliado", "").strip():
-        raise SystemExit("O produto selecionado não tem link de afiliado.")
+    selecionados = [
+        produtos[(base + inicio + i) % len(produtos)]
+        for i in range(quantidade)
+    ]
 
     bot = Bot(TOKEN)
     me = await bot.get_me()
     print(f"Bot conectado: @{me.username}")
-    print(f"Produto selecionado: {produto.get('produto', 'Oferta')}")
+    print(f"Ofertas neste período: {quantidade}")
 
-    await bot.send_message(
-        chat_id=CHANNEL,
-        text=montar_mensagem(produto),
-    )
-    print("Oferta enviada ao canal.")
+    for i, produto in enumerate(selecionados):
+        print(f"Publicando {i + 1}/{quantidade}: {produto['produto']}")
 
+        await bot.send_message(
+            chat_id=CHANNEL,
+            text=montar_mensagem(produto),
+        )
+
+        print("Oferta enviada.")
+
+        if i < len(selecionados) - 1:
+            await asyncio.sleep(300)
+
+    print("Todas as ofertas deste período foram publicadas.")
 
 if __name__ == "__main__":
     asyncio.run(main())
