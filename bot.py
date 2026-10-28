@@ -20,23 +20,30 @@ HORARIOS = {
     "0 21 * * *": 7,
 }
 
+
 def carregar_produtos():
     with CSV_PATH.open("r", encoding="utf-8-sig", newline="") as f:
-        leitor = csv.DictReader(f, delimiter=",")
+        linhas = [linha for linha in f if linha.strip()]
 
-        if not leitor.fieldnames:
-            raise SystemExit("Erro: o CSV está sem cabeçalho.")
+    if not linhas:
+        raise SystemExit("Erro: produtos.csv está vazio.")
 
-        leitor.fieldnames = [
-            nome.strip().lower() for nome in leitor.fieldnames
-        ]
+    leitor = csv.DictReader(linhas, delimiter=",")
 
-        produtos = list(leitor)
+    if not leitor.fieldnames:
+        raise SystemExit("Erro: o CSV está sem cabeçalho.")
 
-        print(f"Cabeçalhos encontrados: {leitor.fieldnames}")
-        print(f"Primeiro produto interpretado: {produtos[0]}")
+    leitor.fieldnames = [
+        nome.strip().lower() if nome else ""
+        for nome in leitor.fieldnames
+    ]
 
-        return produtos
+    produtos = list(leitor)
+
+    print("CABEÇALHOS LIDOS:", repr(leitor.fieldnames))
+    print("PRIMEIRO PRODUTO LIDO:", repr(produtos[0] if produtos else None))
+
+    return produtos
 
 def formatar_preco(valor):
     try:
