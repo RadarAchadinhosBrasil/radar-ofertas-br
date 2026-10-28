@@ -49,36 +49,23 @@ jobs:
      
       - name: Diagnosticar CSV sem publicar
         run: |
-          echo "DIAGNOSTICO NOVO V3"
           python - <<'PY'
-          import csv
-          from pathlib import Path
+          from bot import carregar_produtos
 
-          path = Path("produtos.csv")
+          produtos = carregar_produtos()
+          if len(produtos) < 30:
+              raise SystemExit(f"ERRO: esperados 30 produtos; encontrados {len(produtos)}.")
 
-          print("ARQUIVO EXISTE:", path.exists())
-          print("CAMINHO:", path.resolve())
+          for numero, produto in enumerate(produtos, start=2):
+              faltando = []
+              if not (produto.get("produto") or "").strip():
+                  faltando.append("nome")
+              if not (produto.get("preco_atual_brl") or "").strip():
+                  faltando.append("preço atual")
+              if not (produto.get("link_afiliado") or "").strip():
+                  faltando.append("link de afiliado")
+              if faltando:
+                  raise SystemExit(f"Erro na linha {numero} do CSV: faltam {', '.join(faltando)}.")
 
-          with path.open("r", encoding="utf-8-sig", newline="") as f:
-              linhas = [linha for linha in f if linha.strip()]
-
-          print("TOTAL DE LINHAS NÃO VAZIAS:", len(linhas))
-          print("PRIMEIRA LINHA BRUTA:", repr(linhas[0] if linhas else None))
-
-          if not linhas:
-              raise SystemExit("ERRO: produtos.csv está vazio.")
-
-          leitor = csv.DictReader(linhas, delimiter=",")
-          print("CABEÇALHOS:", repr(leitor.fieldnames))
-
-          primeiro = next(leitor, None)
-          print("PRIMEIRO PRODUTO:", repr(primeiro))
-
-          if primeiro:
-              print("produto =", primeiro.get("produto"))
-              print("preco_atual_brl =", primeiro.get("preco_atual_brl"))
-              print("link_afiliado =", primeiro.get("link_afiliado"))
-
-          print("TOTAL DE PRODUTOS:", 1 + sum(1 for _ in leitor) if primeiro else 0)
+          print(f"SUCESSO: {len(produtos)} produtos válidos. Nenhuma mensagem foi enviada ao Telegram.")
           PY
-
