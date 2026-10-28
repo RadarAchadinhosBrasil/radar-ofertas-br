@@ -48,22 +48,35 @@ jobs:
           python-version: "3.12"
 
       - name: Diagnosticar CSV sem publicar
-       
         run: |
           python - <<'PY'
           import csv
           from pathlib import Path
 
           path = Path("produtos.csv")
+
+          print("ARQUIVO EXISTE:", path.exists())
+          print("CAMINHO:", path.resolve())
+
           with path.open("r", encoding="utf-8-sig", newline="") as f:
               linhas = [linha for linha in f if linha.strip()]
 
-          reader = csv.DictReader(linhas, delimiter=",")
-          print("CABEÇALHOS:", repr(reader.fieldnames))
-          primeiro = next(reader, None)
+          print("TOTAL DE LINHAS NÃO VAZIAS:", len(linhas))
+          print("PRIMEIRA LINHA BRUTA:", repr(linhas[0] if linhas else None))
+
+          if not linhas:
+              raise SystemExit("ERRO: produtos.csv está vazio.")
+
+          leitor = csv.DictReader(linhas, delimiter=",")
+
+          print("CABEÇALHOS:", repr(leitor.fieldnames))
+          primeiro = next(leitor, None)
           print("PRIMEIRO PRODUTO:", repr(primeiro))
 
-          if reader.fieldnames:
-              print("TOTAL DE PRODUTOS:", 1 + sum(1 for _ in reader) if primeiro else 0)
-          PY
+          if primeiro:
+              print("produto =", primeiro.get("produto"))
+              print("preco_atual_brl =", primeiro.get("preco_atual_brl"))
+              print("link_afiliado =", primeiro.get("link_afiliado"))
 
+          print("TOTAL DE PRODUTOS:", 1 + sum(1 for _ in leitor) if primeiro else 0)
+          PY
