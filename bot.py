@@ -24,13 +24,16 @@ def carregar_produtos():
     with CSV_PATH.open("r", encoding="utf-8-sig", newline="") as f:
         return list(csv.DictReader(f))
 
+
 def formatar_preco(valor):
     try:
-        return f"R$ {float(valor):,.2f}".replace(
+        numero = float(str(valor).strip().replace(",", "."))
+        return f"R$ {numero:,.2f}".replace(
             ",", "X"
         ).replace(".", ",").replace("X", ".")
     except (ValueError, TypeError):
         return valor or "Consultar anúncio"
+
 
 def montar_mensagem(produto):
     nome = (produto.get("produto") or "Oferta").strip()
@@ -72,15 +75,23 @@ async def main():
             f"Esperados 30 produtos; encontrados {len(produtos)}."
         )
 
-    if any(
-        not (p.get("produto") or "").strip()
-        or not (p.get("link_afiliado") or "").strip()
-        or not (p.get("preco_atual_brl") or "").strip()
-        for p in produtos
-    ):
-        raise SystemExit(
-            "Há produto sem nome, preço atual ou link de afiliado."
-        )
+    for numero, produto in enumerate(produtos, start=2):
+        campos_faltando = []
+
+        if not (produto.get("produto") or "").strip():
+            campos_faltando.append("nome")
+
+        if not (produto.get("preco_atual_brl") or "").strip():
+            campos_faltando.append("preço atual")
+
+        if not (produto.get("link_afiliado") or "").strip():
+            campos_faltando.append("link de afiliado")
+
+        if campos_faltando:
+            raise SystemExit(
+                f"Erro na linha {numero} do produtos.csv: "
+                f"falta(m) {', '.join(campos_faltando)}."
+            )
 
     ordem = list(HORARIOS.keys())
     slot = ordem.index(HORARIO_AGENDADO)
