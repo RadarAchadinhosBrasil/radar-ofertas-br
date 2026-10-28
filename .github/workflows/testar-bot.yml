@@ -46,9 +46,10 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-
+     
       - name: Diagnosticar CSV sem publicar
         run: |
+          echo "DIAGNOSTICO NOVO V3"
           python - <<'PY'
           import csv
           from pathlib import Path
@@ -68,8 +69,8 @@ jobs:
               raise SystemExit("ERRO: produtos.csv está vazio.")
 
           leitor = csv.DictReader(linhas, delimiter=",")
-
           print("CABEÇALHOS:", repr(leitor.fieldnames))
+
           primeiro = next(leitor, None)
           print("PRIMEIRO PRODUTO:", repr(primeiro))
 
@@ -80,3 +81,4 @@ jobs:
 
           print("TOTAL DE PRODUTOS:", 1 + sum(1 for _ in leitor) if primeiro else 0)
           PY
+
