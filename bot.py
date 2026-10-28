@@ -71,11 +71,12 @@ def montar_mensagem(produto):
         "⚠️ Preço e disponibilidade podem mudar. Confira no anúncio.",
     ]
     return "\n".join(linhas)
-
+S
 async def main():
+    print("VERSAO DO BOT: diagnostico CSV v2")
+
     if not TOKEN:
         raise SystemExit("Falta configurar o segredo TELEGRAM_BOT_TOKEN.")
-
     if not HORARIO_AGENDADO:
         raise SystemExit(
             "Execução manual bloqueada para evitar publicações inesperadas."
