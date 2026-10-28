@@ -22,8 +22,24 @@ HORARIOS = {
 
 def carregar_produtos():
     with CSV_PATH.open("r", encoding="utf-8-sig", newline="") as f:
-        return list(csv.DictReader(f))
+        amostra = f.read(4096)
+        f.seek(0)
 
+        try:
+            delimitador = csv.Sniffer().sniff(
+                amostra, delimiters=",;\t"
+            ).delimiter
+        except csv.Error:
+            delimitador = ","
+
+        leitor = csv.DictReader(f, delimiter=delimitador)
+
+        if leitor.fieldnames:
+            leitor.fieldnames = [
+                nome.strip().lower() for nome in leitor.fieldnames
+            ]
+
+        return list(leitor)
 
 def formatar_preco(valor):
     try:
