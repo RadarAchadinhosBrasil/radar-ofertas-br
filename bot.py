@@ -38,7 +38,8 @@ def carregar_produtos():
     if primeira_linha.count(delimitador) == 0:
         raise SystemExit("Erro: não foi possível detectar o separador do CSV.")
 
-    leitor = csv.DictReader(conteudo.splitlines(), delimiter=delimitador)
+    linhas_csv = [linha for linha in conteudo.splitlines() if linha.strip()]
+    leitor = csv.DictReader(linhas_csv, delimiter=delimitador)
     if not leitor.fieldnames:
         raise SystemExit("Erro: o CSV está sem cabeçalho.")
 
