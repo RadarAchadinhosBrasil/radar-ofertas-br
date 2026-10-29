@@ -30,11 +30,13 @@ def carregar_produtos():
     if not conteudo.strip():
         raise SystemExit("Erro: produtos.csv está vazio.")
 
-    try:
-        dialect = csv.Sniffer().sniff(conteudo[:8192], delimiters=",;\t")
-        delimitador = dialect.delimiter
-    except csv.Error:
-        delimitador = ","
+    # Detecta o separador a partir da primeira linha não vazia (cabeçalho).
+    # Isso evita falhas causadas por linhas em branco antes do cabeçalho.
+    primeira_linha = next((linha for linha in conteudo.splitlines() if linha.strip()), "")
+    candidatos = [",", ";", "\\t"]
+    delimitador = max(candidatos, key=lambda sep: primeira_linha.count(sep))
+    if primeira_linha.count(delimitador) == 0:
+        raise SystemExit("Erro: não foi possível detectar o separador do CSV.")
 
     leitor = csv.DictReader(conteudo.splitlines(), delimiter=delimitador)
     if not leitor.fieldnames:
