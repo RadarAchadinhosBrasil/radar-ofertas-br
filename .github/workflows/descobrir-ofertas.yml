@@ -1,0 +1,29 @@
+name: Descobrir ofertas candidatas
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "30 10 * * *"
+    - cron: "30 16 * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  descobrir:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar repositório
+        uses: actions/checkout@v4
+      - name: Preparar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Consultar ofertas públicas
+        run: python discover.py
+      - name: Disponibilizar candidatos para revisão
+        uses: actions/upload-artifact@v4
+        with:
+          name: ofertas-candidatas
+          path: candidatos_ofertas.csv
+          retention-days: 14
