@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "painel/**"
+      - "produtos.csv"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
 
@@ -28,6 +29,7 @@ jobs:
           mkdir -p _site
           cp painel/index.html _site/index.html
           cp painel/README.md _site/README.md
+          cp produtos.csv _site/produtos.csv
       - name: Configurar Pages
         uses: actions/configure-pages@v5
       - name: Enviar artefato
