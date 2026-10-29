@@ -31,7 +31,7 @@ def carregar_produtos():
         raise SystemExit("Erro: produtos.csv está vazio.")
 
     try:
-        dialect = csv.Sniffer().sniff(conteudo[:8192], delimiters=",;\\t")
+        dialect = csv.Sniffer().sniff(conteudo[:8192], delimiters=",;\t")
         delimitador = dialect.delimiter
     except csv.Error:
         delimitador = ","
@@ -41,7 +41,7 @@ def carregar_produtos():
         raise SystemExit("Erro: o CSV está sem cabeçalho.")
 
     def normalizar_cabecalho(valor):
-        return (valor or "").strip().lower().replace("\\ufeff", "").replace(" ", "_")
+        return (valor or "").strip().lower().replace("\ufeff", "").replace(" ", "_")
 
     cabecalhos = [normalizar_cabecalho(nome) for nome in leitor.fieldnames]
     aliases = {
