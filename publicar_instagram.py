@@ -136,17 +136,23 @@ def main():
         print("Sem imagens HTTPS públicas não é possível publicar Feed/Stories pela API oficial.")
         print("Produtos sem imagem: " + "; ".join(missing))
         sys.exit(2)
+    # Prévia não exige credenciais da Meta e nunca publica.
+    if os.getenv("IG_ACTION", "preview").strip().lower() != "publish":
+        print(f"PRÉVIA SEGURA: {len(selected)} produtos validados. Nenhuma publicação enviada.")
+        for p in selected:
+            print("\\n--- " + p["produto"] + " ---")
+            print("Imagem: " + p["imagem_url"])
+            print(caption(p))
+        print("\\nPara publicar de verdade, selecione a ação Publicar e configure os Secrets da Meta.")
+        return
+
+    if os.getenv("CONFIRMAR_PUBLICACAO") != "SIM":
+        raise SystemExit("PUBLICAÇÃO BLOQUEADA: defina o Secret CONFIRMAR_PUBLICACAO=SIM somente após revisar a prévia.")
     token, ig_id = os.getenv("IG_ACCESS_TOKEN"), os.getenv("IG_USER_ID")
     version = os.getenv("IG_GRAPH_API_VERSION")
     if not token or not ig_id or not version:
         raise SystemExit("Configure IG_ACCESS_TOKEN, IG_USER_ID e IG_GRAPH_API_VERSION nos Secrets/Variables do GitHub.")
     api = f"https://graph.facebook.com/{version}"
-    if os.getenv("CONFIRMAR_PUBLICACAO") != "SIM":
-        print(f"PRÉVIA: {len(selected)} produtos validados. Nenhuma publicação enviada.")
-        for p in selected:
-            print("- " + p["produto"] + " | " + p["imagem_url"])
-        print("Para publicar, use execução manual autorizada e CONFIRMAR_PUBLICACAO=SIM.")
-        return
     mode = os.getenv("IG_MEDIA_TYPE", "IMAGE")
     if mode not in ("IMAGE", "STORIES"):
         raise SystemExit("IG_MEDIA_TYPE deve ser IMAGE ou STORIES.")
