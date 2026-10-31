@@ -16,3 +16,10 @@ O painel ainda não busca produtos nem cria links de afiliado sozinho. Isso depe
 
 ## Bot Telegram
 O fluxo atual de publicação continua independente e não foi alterado por esta entrega.
+
+## Central de automação
+O painel agora exibe o estado dos três canais e os horários planejados. Telegram permanece ativo; Instagram e WhatsApp aparecem como aguardando conexão até que as contas e permissões oficiais sejam configuradas.
+
+Consulte `INTEGRACOES-SOCIAIS.md` para os requisitos de cada plataforma. O arquivo `planejador_canais.py` gera prévias dos mesmos lotes do Telegram sem publicar. O workflow `Prévia dos lotes sociais (sem publicar)` permite testar os quatro horários pelo GitHub Actions.
+
+**Limites importantes:** Instagram exige conta profissional elegível, permissões da Meta e imagens públicas HTTPS. WhatsApp Cloud API envia a contatos com opt-in e não publica em grupos comuns. Não automatizamos follows/unfollows em massa nem usamos WhatsApp Web não oficial.
