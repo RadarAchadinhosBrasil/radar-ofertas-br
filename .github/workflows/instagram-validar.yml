@@ -1,25 +1,35 @@
-name: Instagram — validação segura
+name: Instagram — prévia e publicação controlada
 on:
   workflow_dispatch:
     inputs:
+      acao:
+        description: "Prévia não publica. Publicar envia de verdade para o Instagram."
+        required: true
+        type: choice
+        default: "preview"
+        options:
+          - "preview"
+          - "publish"
       slot:
         description: "Lote (horário UTC)"
         required: true
         type: choice
+        default: "0 12 * * *"
         options:
           - "0 12 * * *"
           - "0 15 * * *"
           - "0 18 * * *"
           - "0 21 * * *"
       tipo:
-        description: "Formato para teste futuro"
+        description: "Formato"
         required: true
         type: choice
+        default: "IMAGE"
         options:
           - "IMAGE"
           - "STORIES"
       limite:
-        description: "Quantidade máxima a publicar nesta execução"
+        description: "Quantidade máxima. Comece sempre com 1."
         required: true
         type: choice
         default: "1"
@@ -29,7 +39,7 @@ on:
 permissions:
   contents: read
 jobs:
-  validar:
+  instagram:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -37,8 +47,9 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install requests
-      - name: Validar configuração e mídia (sem publicar)
+      - name: Validar catálogo e gerar prévia ou publicar
         env:
+          IG_ACTION: ${{ inputs.acao }}
           SLOT_UTC: ${{ inputs.slot }}
           IG_MEDIA_TYPE: ${{ inputs.tipo }}
           IG_MAX_PUBLICATIONS: ${{ inputs.limite }}
