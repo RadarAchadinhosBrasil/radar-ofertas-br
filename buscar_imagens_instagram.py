@@ -19,7 +19,7 @@ from PIL import Image, UnidentifiedImageError
 CSV_PATH = Path(__file__).with_name("produtos.csv")
 SLOTS = {"0 12 * * *": 8, "0 15 * * *": 8, "0 18 * * *": 7, "0 21 * * *": 7}
 HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; RadarOfertasBR/1.0)"}
-MIN_DIMENSION = 300
+MIN_DIMENSION = 200
 MAX_IMAGE_BYTES = 15 * 1024 * 1024
 
 
