@@ -11,7 +11,7 @@ from datetime import datetime, timezone
 import requests
 
 CSV = Path(__file__).with_name("produtos.csv")
-SLOTS = {"0 12 * * *": 8, "0 15 * * *": 8, "0 18 * * *": 7, "0 21 * * *": 7}
+SLOTS = {"0 12 * * *": 1, "0 15 * * *": 1, "0 18 * * *": 1, "0 21 * * *": 1}
 
 
 def load_products():
