@@ -102,8 +102,11 @@ def main():
     missing = [p["produto"] for p in selected
                if not valid_image(p.get("imagem_url", ""))]
     if missing:
-        print("BLOQUEADO: adicione uma coluna imagem_url com URL HTTPS pública para cada produto selecionado.")
-        print("Sem imagens não é possível publicar Feed/Stories pela API oficial.")
+        print("BLOQUEADO: o catálogo ainda não tem imagem_url válida para todos os produtos deste lote.")
+        print("ATENÇÃO: este workflow apenas valida/publica; ele NÃO busca imagens.")
+        print("Primeiro execute GitHub Actions > Instagram — buscar imagens do lote.")
+        print("Selecione exatamente o mesmo lote UTC e aguarde a conclusão; depois execute esta validação novamente.")
+        print("Sem imagens HTTPS públicas não é possível publicar Feed/Stories pela API oficial.")
         print("Produtos sem imagem: " + "; ".join(missing))
         sys.exit(2)
     token, ig_id = os.getenv("IG_ACCESS_TOKEN"), os.getenv("IG_USER_ID")
