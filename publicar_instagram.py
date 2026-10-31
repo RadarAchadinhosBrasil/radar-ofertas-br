@@ -61,7 +61,7 @@ def caption(p):
         except ValueError:
             old = f"R$ {old}"
         lines.append(f"De: {old}")
-    lines += [f"💰 Por: {current}", "", "🔗 Quer aproveitar? Acesse o link da oferta na BIO do perfil.",
+    lines += [f"💰 Por: {current}", "", "🔗 Para acessar esta oferta, toque em @radarachadinhosbrasil e escolha Telegram ou WhatsApp nos links da bio.",
               "", "⚠️ Preço e disponibilidade podem mudar. Confira no anúncio.",
               "", "#RadarDeOfertas #Achadinhos #Ofertas"]
     return "\n".join(lines)
