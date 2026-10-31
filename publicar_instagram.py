@@ -67,8 +67,29 @@ def caption(p):
     return "\n".join(lines)
 
 
+def best_image_url(session, original_url):
+    """Tenta a variante original do CDN do Mercado Livre; mantém a imagem validada como fallback."""
+    original_url = original_url.strip()
+    # O sufixo -P costuma indicar imagem de prévia. -O solicita a versão original
+    # quando o anúncio/CDN disponibiliza essa variante.
+    candidate = original_url.replace("-P.", "-O.")
+    if candidate == original_url:
+        return original_url
+    try:
+        response = session.get(candidate, stream=True, timeout=25,
+                               headers={"User-Agent": "Mozilla/5.0"})
+        content_type = response.headers.get("Content-Type", "").lower()
+        length = int(response.headers.get("Content-Length", "0") or 0)
+        ok = response.status_code == 200 and content_type.startswith("image/") and (length == 0 or length >= 30000)
+        response.close()
+        return candidate if ok else original_url
+    except requests.RequestException:
+        return original_url
+
+
 def publish(session, api, ig_id, token, product, media_type):
-    image = product["imagem_url"].strip()
+    image = best_image_url(session, product["imagem_url"])
+    print(f"Imagem selecionada: {image}")
     payload = {"image_url": image, "caption": caption(product), "access_token": token}
     if media_type == "STORIES":
         payload["media_type"] = "STORIES"
