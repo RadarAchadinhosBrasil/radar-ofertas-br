@@ -1,0 +1,27 @@
+name: Prévia dos lotes sociais (sem publicar)
+on:
+  workflow_dispatch:
+    inputs:
+      slot:
+        description: "Horário UTC do lote"
+        required: true
+        type: choice
+        options:
+          - "0 12 * * *"
+          - "0 15 * * *"
+          - "0 18 * * *"
+          - "0 21 * * *"
+permissions:
+  contents: read
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Gerar prévia segura
+        env:
+          SLOT_UTC: ${{ inputs.slot }}
+        run: python planejador_canais.py
