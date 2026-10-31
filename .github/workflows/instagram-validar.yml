@@ -18,6 +18,14 @@ on:
         options:
           - "IMAGE"
           - "STORIES"
+      limite:
+        description: "Quantidade máxima a publicar nesta execução"
+        required: true
+        type: choice
+        default: "1"
+        options:
+          - "1"
+          - "lote"
 permissions:
   contents: read
 jobs:
@@ -33,6 +41,7 @@ jobs:
         env:
           SLOT_UTC: ${{ inputs.slot }}
           IG_MEDIA_TYPE: ${{ inputs.tipo }}
+          IG_MAX_PUBLICATIONS: ${{ inputs.limite }}
           IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
           IG_USER_ID: ${{ secrets.IG_USER_ID }}
           IG_GRAPH_API_VERSION: ${{ vars.IG_GRAPH_API_VERSION || secrets.IG_GRAPH_API_VERSION }}
