@@ -99,6 +99,12 @@ def main():
     slot = os.getenv("SLOT_UTC", "0 12 * * *")
     products = load_products()
     selected = choose(products, slot)
+    # Limite opcional para teste controlado: 1 publica somente o primeiro item do lote.
+    max_publications = os.getenv("IG_MAX_PUBLICATIONS", "lote").strip().lower()
+    if max_publications == "1":
+        selected = selected[:1]
+    elif max_publications != "lote":
+        raise SystemExit("IG_MAX_PUBLICATIONS deve ser 1 ou lote.")
     missing = [p["produto"] for p in selected
                if not valid_image(p.get("imagem_url", ""))]
     if missing:
