@@ -33,3 +33,11 @@ A Cloud API oficial envia mensagens para números que deram consentimento (opt-i
 SLOT_UTC="0 12 * * *" python planejador_canais.py
 ```
 O script apenas imprime a prévia do lote; não envia mensagens.
+
+
+## Preparação técnica do Instagram
+- `publicar_instagram.py` implementa o fluxo oficial: criar contêiner de mídia, aguardar processamento e publicar via Instagram Graph API. O padrão é prévia/validação; só publica com confirmação explícita no ambiente.
+- O catálogo ainda não contém `imagem_url`. Antes de qualquer publicação, cada produto do lote precisa ter uma URL HTTPS pública de imagem autorizada para uso. O script bloqueia o envio se faltar imagem.
+- O workflow `.github/workflows/instagram-validar.yml` é manual e apenas valida; não agenda nem publica automaticamente.
+- Secrets necessários para futura ativação: `IG_ACCESS_TOKEN`, `IG_USER_ID`; variável `IG_GRAPH_API_VERSION` com a versão habilitada no app Meta. Não gravar esses valores no repositório nem compartilhar no chat.
+- Após testar uma publicação isolada e confirmar permissões/limites da Meta, será criada a rotina agendada. Feed e Stories devem ser ativados e testados separadamente.
