@@ -74,8 +74,10 @@ def make_story(p, index):
     d.rounded_rectangle((65,1320,1015,1510),radius=34,fill=GREEN)
     d.text((105,1340),"POR APENAS",font=font(29,True),fill=(5,45,31))
     d.text((105,1378),current or "Confira no anúncio",font=font(72,True),fill=(5,45,31))
-    d.rounded_rectangle((65,1540,1015,1665),radius=30,fill=ACCENT)
-    d.text((540,1600),"ACESSE O LINK NA BIO",font=font(40,True),fill=(34,29,18),anchor="mm")
+    d.rounded_rectangle((65,1530,1015,1715),radius=30,fill=ACCENT)
+    d.text((540,1575),"QUER RECEBER MAIS OFERTAS?",font=font(34,True),fill=(34,29,18),anchor="mm")
+    d.text((540,1640),'ENVIE "OFERTAS" NO DIRECT',font=font(39,True),fill=(34,29,18),anchor="mm")
+    d.text((540,1690),"e receba o link do nosso Telegram",font=font(25,True),fill=(34,29,18),anchor="mm")
     d.text((540,1840),"Preço e disponibilidade podem mudar. Confira no anúncio.",font=font(21),fill=MUTED,anchor="mm")
     OUT.mkdir(exist_ok=True)
     safe=re.sub(r"[^a-zA-Z0-9_-]+","-",(p.get("produto") or "")).strip("-")[:45] or f"oferta-{index}"
