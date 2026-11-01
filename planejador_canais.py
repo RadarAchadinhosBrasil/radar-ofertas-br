@@ -23,7 +23,9 @@ def plan(slot, products, day=None):
     count = SLOTS[slot]
     start = sum(SLOTS[s] for s in ordered[:idx])
     ordinal = (day or datetime.now(timezone.utc).date()).toordinal()
-    base = ordinal % len(products)
+    daily_total = sum(SLOTS.values())
+    # Mantém a prévia alinhada à rotação do bot: avança o lote diário inteiro.
+    base = (ordinal * daily_total) % len(products)
     return [products[(base + start + i) % len(products)] for i in range(count)]
 
 def brl(value):
