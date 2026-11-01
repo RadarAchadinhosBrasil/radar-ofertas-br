@@ -1,0 +1,72 @@
+
+name: Instagram — ofertas automáticas
+
+on:
+  schedule:
+    - cron: "0 12 * * *"
+    - cron: "0 15 * * *"
+    - cron: "0 18 * * *"
+    - cron: "0 21 * * *"
+  workflow_dispatch:
+    inputs:
+      slot:
+        description: "Lote UTC para teste manual"
+        required: true
+        type: choice
+        default: "0 12 * * *"
+        options:
+          - "0 12 * * *"
+          - "0 15 * * *"
+          - "0 18 * * *"
+          - "0 21 * * *"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: instagram-ofertas
+  cancel-in-progress: false
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar repositório
+        uses: actions/checkout@v4
+
+      - name: Preparar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar dependências
+        run: pip install requests
+
+      - name: Definir horário do lote
+        id: slot
+        env:
+          MANUAL_SLOT: ${{ inputs.slot }}
+          EVENT_SCHEDULE: ${{ github.event.schedule }}
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            SLOT="$MANUAL_SLOT"
+          else
+            SLOT="$EVENT_SCHEDULE"
+          fi
+          case "$SLOT" in
+            "0 12 * * *"|"0 15 * * *"|"0 18 * * *"|"0 21 * * *") ;;
+            *) echo "Horário não reconhecido: $SLOT"; exit 1 ;;
+          esac
+          echo "value=$SLOT" >> "$GITHUB_OUTPUT"
+
+      - name: Publicar uma oferta no Instagram
+        env:
+          IG_ACTION: publish
+          SLOT_UTC: ${{ steps.slot.outputs.value }}
+          IG_MEDIA_TYPE: IMAGE
+          IG_MAX_PUBLICATIONS: "1"
+          CONFIRMAR_PUBLICACAO: ${{ secrets.CONFIRMAR_PUBLICACAO }}
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+          IG_GRAPH_API_VERSION: ${{ vars.IG_GRAPH_API_VERSION || secrets.IG_GRAPH_API_VERSION }}
+        run: python publicar_instagram.py
