@@ -1,0 +1,107 @@
+name: Instagram — publicar 1 Story de teste
+on:
+  workflow_dispatch:
+    inputs:
+      confirmar:
+        description: "Digite SIM para autorizar a publicação de 1 Story"
+        required: true
+        type: choice
+        options: ["NAO", "SIM"]
+        default: "NAO"
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  publicar:
+    if: ${{ inputs.confirmar == 'SIM' }}
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+    steps:
+      - name: Baixar repositório
+        uses: actions/checkout@v4
+      - name: Preparar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Instalar dependências
+        run: pip install requests pillow
+      - name: Gerar somente 1 Story
+        env:
+          STORY_LIMIT: "1"
+        run: python gerar_story.py
+      - name: Montar site completo com a arte pública
+        run: |
+          python - <<'PY'
+          import csv, hashlib, urllib.request
+          from pathlib import Path
+          from urllib.parse import urlparse
+          out=Path("_site"); images=out/"images"; images.mkdir(parents=True,exist_ok=True)
+          out.joinpath("index.html").write_text(Path("painel/index.html").read_text(encoding="utf-8"),encoding="utf-8")
+          readme=Path("painel/README.md")
+          if readme.exists(): out.joinpath("README.md").write_text(readme.read_text(encoding="utf-8"),encoding="utf-8")
+          with open("produtos.csv",encoding="utf-8-sig",newline="") as f:
+              reader=csv.DictReader(f); fields=reader.fieldnames; rows=list(reader)
+          for row in rows:
+              url=(row.get("imagem_url") or "").strip()
+              if not url.startswith("https://"): continue
+              try:
+                  req=urllib.request.Request(url,headers={"User-Agent":"Mozilla/5.0 RadarOfertasBR/1.0"})
+                  with urllib.request.urlopen(req,timeout=25) as r:
+                      data=r.read(); mime=r.headers.get_content_type()
+                  if not mime.startswith("image/") or not data: continue
+                  ext={"image/jpeg":".jpg","image/png":".png","image/webp":".webp","image/avif":".avif"}.get(mime,Path(urlparse(url).path).suffix or ".img")
+                  name=hashlib.sha256(url.encode()).hexdigest()[:20]+ext
+                  (images/name).write_bytes(data); row["imagem_url"]="images/"+name
+              except Exception as e: print("Imagem mantida na origem:",e)
+          with open(out/"produtos.csv","w",encoding="utf-8",newline="") as f:
+              w=csv.DictWriter(f,fieldnames=fields); w.writeheader(); w.writerows(rows)
+          stories=sorted(Path("story-preview").glob("*.jpg"))
+          if len(stories)!=1: raise SystemExit(f"Esperado exatamente 1 Story, encontrados {len(stories)}")
+          target=out/"story-assets"/"story.jpg"; target.parent.mkdir(parents=True,exist_ok=True); target.write_bytes(stories[0].read_bytes())
+          print("Arte preparada:",target,"bytes:",target.stat().st_size)
+          PY
+      - name: Configurar GitHub Pages
+        uses: actions/configure-pages@v5
+      - name: Enviar site e Story para Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - name: Publicar site no GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+      - name: Confirmar que a imagem está pública
+        env:
+          PAGES_URL: ${{ vars.PAGES_URL }}
+        run: |
+          python - <<'PY'
+          import os,requests
+          base=os.environ["PAGES_URL"].rstrip("/")
+          url=base+"/story-assets/story.jpg"
+          r=requests.get(url,timeout=45)
+          r.raise_for_status()
+          if not r.headers.get("Content-Type","").lower().startswith("image/"):
+              raise SystemExit("A URL pública não retornou uma imagem.")
+          if len(r.content)<10000: raise SystemExit("A imagem pública parece incompleta.")
+          print("Imagem pública validada:",url,"bytes:",len(r.content))
+          PY
+      - name: Publicar 1 Story no Instagram
+        env:
+          CONFIRMAR_PUBLICACAO: SIM
+          IG_GRAPH_API_VERSION: ${{ secrets.IG_GRAPH_API_VERSION }}
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+          PAGES_URL: ${{ vars.PAGES_URL }}
+        run: python publicar_story.py
+      - name: Guardar a arte usada como comprovante
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: radar-story-teste
+          path: story-preview/*.jpg
+          if-no-files-found: warn
+          retention-days: 7
