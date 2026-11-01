@@ -50,9 +50,7 @@ def fetch_best_image(session, url):
                 best = (image.copy(), candidate, width, height)
                 best_area = area
 
-            # A variante original do Mercado Livre normalmente é -O.
-            if candidate.endswith("-O" + Path(urlparse(candidate).path).suffix) and min(width, height) >= MIN_SIDE:
-                break
+            # Compara todas as variantes: em alguns anúncios -F/-V pode ser maior que -O.
         except Exception as error:
             failures.append(f"{candidate}: {error}")
 
@@ -106,7 +104,7 @@ def main():
     image.thumbnail((2160, 2700), Image.Resampling.LANCZOS)
 
     # JPEG de alta qualidade; sem ampliar artificialmente imagens pequenas.
-    image.save(destination, "JPEG", quality=95, subsampling=0, optimize=True)
+    image.save(destination, "JPEG", quality=97, subsampling=0, optimize=True, progressive=True)
 
     mapping = {original: "instagram-assets/" + name}
     (ROOT / "instagram_images.json").write_text(
