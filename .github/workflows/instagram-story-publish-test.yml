@@ -76,11 +76,12 @@ jobs:
         uses: actions/deploy-pages@v4
       - name: Confirmar que a imagem está pública
         env:
-          PAGES_URL: ${{ vars.PAGES_URL }}
+          PAGES_URL: ${{ steps.deployment.outputs.page_url }}
         run: |
           python - <<'PY'
           import os,requests
           base=os.environ["PAGES_URL"].rstrip("/")
+          if not base.startswith("https://"): raise SystemExit("GitHub Pages não retornou uma URL HTTPS válida: "+repr(base))
           url=base+"/story-assets/story.jpg"
           r=requests.get(url,timeout=45)
           r.raise_for_status()
@@ -95,7 +96,7 @@ jobs:
           IG_GRAPH_API_VERSION: ${{ secrets.IG_GRAPH_API_VERSION }}
           IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
           IG_USER_ID: ${{ secrets.IG_USER_ID }}
-          PAGES_URL: ${{ vars.PAGES_URL }}
+          PAGES_URL: ${{ steps.deployment.outputs.page_url }}
         run: python publicar_story.py
       - name: Guardar a arte usada como comprovante
         if: always()
