@@ -24,12 +24,52 @@ jobs:
     steps:
       - name: Baixar repositório
         uses: actions/checkout@v4
-      - name: Preparar site
+      - name: Preparar painel e hospedar imagens localmente
         run: |
-          mkdir -p _site
-          cp painel/index.html _site/index.html
-          cp painel/README.md _site/README.md
-          cp produtos.csv _site/produtos.csv
+          python - <<'PY'
+          import csv, hashlib, os, urllib.request
+          from pathlib import Path
+          from urllib.parse import urlparse
+
+          out = Path("_site")
+          images = out / "images"
+          images.mkdir(parents=True, exist_ok=True)
+          with open("painel/index.html", encoding="utf-8") as src:
+              (out / "index.html").write_text(src.read(), encoding="utf-8")
+          readme = Path("painel/README.md")
+          if readme.exists():
+              (out / "README.md").write_text(readme.read_text(encoding="utf-8"), encoding="utf-8")
+
+          with open("produtos.csv", encoding="utf-8-sig", newline="") as src:
+              reader = csv.DictReader(src)
+              fields = reader.fieldnames
+              rows = list(reader)
+
+          for row in rows:
+              url = (row.get("imagem_url") or "").strip()
+              if not url.startswith("https://"):
+                  continue
+              try:
+                  request = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 RadarOfertasBR/1.0"})
+                  with urllib.request.urlopen(request, timeout=25) as response:
+                      data = response.read()
+                      mime = response.headers.get_content_type()
+                  if not mime.startswith("image/") or not data:
+                      raise ValueError("resposta não é imagem")
+                  ext = {"image/jpeg": ".jpg", "image/png": ".png", "image/webp": ".webp", "image/avif": ".avif"}.get(mime, Path(urlparse(url).path).suffix or ".img")
+                  name = hashlib.sha256(url.encode()).hexdigest()[:20] + ext
+                  (images / name).write_bytes(data)
+                  row["imagem_url"] = "images/" + name
+                  print("IMAGEM HOSPEDADA:", name)
+              except Exception as exc:
+                  print("IMAGEM MANTIDA NA ORIGEM:", url, "-", exc)
+
+          with open(out / "produtos.csv", "w", encoding="utf-8", newline="") as dst:
+              writer = csv.DictWriter(dst, fieldnames=fields)
+              writer.writeheader()
+              writer.writerows(rows)
+          print("Catálogo preparado:", len(rows), "produtos;", len(list(images.iterdir())), "imagens locais.")
+          PY
       - name: Configurar Pages
         uses: actions/configure-pages@v5
       - name: Enviar artefato
