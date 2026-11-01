@@ -153,7 +153,10 @@ async def main():
     inicio = sum(HORARIOS[h] for h in ordem[:slot])
 
     dia = datetime.now(timezone.utc).date().toordinal()
-    base = dia % len(produtos)
+    total_diario = sum(HORARIOS.values())
+    # Avança um lote diário completo, em vez de apenas 1 produto.
+    # Isso evita repetir os mesmos 30 itens em dias consecutivos.
+    base = (dia * total_diario) % len(produtos)
 
     selecionados = [
         produtos[(base + inicio + i) % len(produtos)]
