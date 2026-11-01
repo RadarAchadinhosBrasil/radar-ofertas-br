@@ -1,0 +1,34 @@
+name: Instagram — gerar prévia visual dos Stories
+on:
+  workflow_dispatch:
+    inputs:
+      quantidade:
+        description: "Quantidade de artes para revisar (1 a 10)"
+        required: true
+        type: choice
+        default: "4"
+        options: ["1", "2", "4", "8"]
+permissions:
+  contents: read
+jobs:
+  gerar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Instalar dependências
+        run: pip install requests pillow
+      - name: Gerar artes sem publicar
+        env:
+          STORY_LIMIT: ${{ inputs.quantidade }}
+        run: python gerar_story.py
+      - name: Disponibilizar artes para revisão
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: radar-stories-preview
+          path: story-preview/*.jpg
+          if-no-files-found: warn
+          retention-days: 7
