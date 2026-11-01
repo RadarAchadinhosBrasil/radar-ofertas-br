@@ -149,7 +149,8 @@ def main():
 
     print("Produto preparado:", product["produto"])
     print("Imagem JPG otimizada:", destination)
-    print("Dimensões finais:", image.size)
+    print("Dimensões da foto:", image.size)
+    print("Dimensões finais do JPG:", background.size)
     print("Tamanho:", destination.stat().st_size, "bytes")
 
 
