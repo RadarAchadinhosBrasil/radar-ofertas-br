@@ -35,11 +35,15 @@ jobs:
           python-version: "3.12"
       - name: Instalar dependências
         run: pip install requests pillow
-      - name: Gerar somente 1 Story
+      - name: Gerar de 3 a 5 Stories com produtos diferentes
+        id: gerar
         env:
-          STORY_LIMIT: "1"
+          STORY_COUNT_MIN: "3"
+          STORY_COUNT_MAX: "5"
           STORY_ROTATE: "1"
-        run: python gerar_story.py
+        run: |
+          python gerar_story.py
+          echo "count=$(cat story-preview/story_count.txt)" >> "$GITHUB_OUTPUT"
       - name: Montar site completo com a arte pública
         run: |
           python - <<'PY'
@@ -67,9 +71,14 @@ jobs:
           with open(out/"produtos.csv","w",encoding="utf-8",newline="") as f:
               w=csv.DictWriter(f,fieldnames=fields); w.writeheader(); w.writerows(rows)
           stories=sorted(Path("story-preview").glob("*.jpg"))
-          if len(stories)!=1: raise SystemExit(f"Esperado exatamente 1 Story, encontrados {len(stories)}")
-          target=out/"story-assets"/"story.jpg"; target.parent.mkdir(parents=True,exist_ok=True); target.write_bytes(stories[0].read_bytes())
-          print("Arte preparada:",target,"bytes:",target.stat().st_size)
+          expected=int(Path("story-preview/story_count.txt").read_text(encoding="utf-8").strip())
+          if len(stories)!=expected or not 3<=expected<=5:
+              raise SystemExit(f"Esperados 3 a 5 Stories (contador {expected}), encontrados {len(stories)}")
+          target_dir=out/"story-assets"; target_dir.mkdir(parents=True,exist_ok=True)
+          for i,story in enumerate(stories,1):
+              target=target_dir/f"story-{i:02d}.jpg"
+              target.write_bytes(story.read_bytes())
+              print("Arte preparada:",target,"bytes:",target.stat().st_size)
           PY
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
@@ -88,17 +97,22 @@ jobs:
           import os,requests
           base=os.environ["PAGES_URL"].rstrip("/")
           if not base.startswith("https://"): raise SystemExit("GitHub Pages não retornou uma URL HTTPS válida: "+repr(base))
-          url=base+"/story-assets/story.jpg"
-          r=requests.get(url,timeout=45)
-          r.raise_for_status()
-          if not r.headers.get("Content-Type","").lower().startswith("image/"):
-              raise SystemExit("A URL pública não retornou uma imagem.")
-          if len(r.content)<10000: raise SystemExit("A imagem pública parece incompleta.")
-          print("Imagem pública validada:",url,"bytes:",len(r.content))
+          from pathlib import Path
+          count=int(Path("story-preview/story_count.txt").read_text(encoding="utf-8").strip())
+          for i in range(1,count+1):
+              url=f"{base}/story-assets/story-{i:02d}.jpg"
+              r=requests.get(url,timeout=45)
+              r.raise_for_status()
+              if not r.headers.get("Content-Type","").lower().startswith("image/"):
+                  raise SystemExit(f"A URL pública não retornou uma imagem: {url}")
+              if len(r.content)<10000:
+                  raise SystemExit(f"A imagem pública parece incompleta: {url}")
+              print("Imagem pública validada:",url,"bytes:",len(r.content))
           PY
-      - name: Publicar 1 Story no Instagram
+      - name: Publicar de 3 a 5 Stories no Instagram
         env:
           CONFIRMAR_PUBLICACAO: SIM
+          STORY_COUNT: ${{ steps.gerar.outputs.count }}
           IG_GRAPH_API_VERSION: ${{ secrets.IG_GRAPH_API_VERSION }}
           IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
           IG_USER_ID: ${{ secrets.IG_USER_ID }}
@@ -108,7 +122,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: radar-story-teste
+          name: radar-stories-publicados
           path: story-preview/*.jpg
           if-no-files-found: warn
           retention-days: 7
