@@ -1,5 +1,10 @@
 name: Instagram — publicar 1 Story de teste
 on:
+  schedule:
+    - cron: "30 12 * * *"
+    - cron: "30 15 * * *"
+    - cron: "30 18 * * *"
+    - cron: "30 21 * * *"
   workflow_dispatch:
     inputs:
       confirmar:
@@ -17,7 +22,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   publicar:
-    if: ${{ inputs.confirmar == 'SIM' }}
+    if: ${{ github.event_name == 'schedule' || inputs.confirmar == 'SIM' }}
     runs-on: ubuntu-latest
     environment:
       name: github-pages
@@ -33,6 +38,7 @@ jobs:
       - name: Gerar somente 1 Story
         env:
           STORY_LIMIT: "1"
+          STORY_ROTATE: "1"
         run: python gerar_story.py
       - name: Montar site completo com a arte pública
         run: |
