@@ -86,7 +86,16 @@ def make_story(p, index):
 def main():
     limit=int(os.getenv("STORY_LIMIT","4"))
     if limit<1 or limit>10: raise SystemExit("STORY_LIMIT deve ficar entre 1 e 10")
-    rows=load_products()[:limit]
+    rows=load_products()
+    if os.getenv("STORY_ROTATE", "").strip() == "1":
+        from datetime import datetime, timezone
+        now = datetime.now(timezone.utc)
+        slots = {12: 0, 15: 1, 18: 2, 21: 3}
+        slot_index = slots.get(now.hour, now.hour % 4)
+        offset = ((now.timetuple().tm_yday - 1) * 4 + slot_index) % len(rows)
+        rows = rows[offset:] + rows[:offset]
+        print(f"ROTAÇÃO DE STORIES: produto inicial {offset + 1}/{len(rows)}")
+    rows=rows[:limit]
     for i,p in enumerate(rows,1):
         try: make_story(p,i)
         except Exception as e: print(f"PENDENTE: {p.get('produto','(sem nome)')} — {e}")
