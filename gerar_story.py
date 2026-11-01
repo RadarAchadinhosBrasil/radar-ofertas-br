@@ -84,9 +84,21 @@ def make_story(p, index):
     path=OUT/f"story-{index:02d}-{safe}.jpg"; im.save(path,quality=92,optimize=True); print(f"ARTE GERADA: {path}")
 
 def main():
-    limit=int(os.getenv("STORY_LIMIT","4"))
-    if limit<1 or limit>10: raise SystemExit("STORY_LIMIT deve ficar entre 1 e 10")
-    rows=load_products()
+    min_count = int(os.getenv("STORY_COUNT_MIN", "3"))
+    max_count = int(os.getenv("STORY_COUNT_MAX", "5"))
+    if min_count < 1 or max_count < min_count or max_count > 10:
+        raise SystemExit("Faixa STORY_COUNT_MIN/MAX inválida")
+    rows = load_products()
+    # Evita repetir o mesmo produto dentro da rodada.
+    unique, seen = [], set()
+    for row in rows:
+        key = (row.get("produto") or "").strip().casefold()
+        if key and key not in seen:
+            seen.add(key)
+            unique.append(row)
+    rows = unique
+    if len(rows) < max_count:
+        raise SystemExit(f"Catálogo tem apenas {len(rows)} produtos diferentes; são necessários {max_count}.")
     if os.getenv("STORY_ROTATE", "").strip() == "1":
         from datetime import datetime, timezone
         now = datetime.now(timezone.utc)
@@ -95,12 +107,20 @@ def main():
         offset = ((now.timetuple().tm_yday - 1) * 4 + slot_index) % len(rows)
         rows = rows[offset:] + rows[:offset]
         print(f"ROTAÇÃO DE STORIES: produto inicial {offset + 1}/{len(rows)}")
-    rows=rows[:limit]
-    for i,p in enumerate(rows,1):
-        try: make_story(p,i)
-        except Exception as e: print(f"PENDENTE: {p.get('produto','(sem nome)')} — {e}")
-    generated=list(OUT.glob("*.jpg")) if OUT.exists() else []
-    print(f"RESULTADO: {len(generated)}/{len(rows)} artes geradas. Nenhuma publicação foi feita.")
-    if len(generated)!=len(rows): sys.exit(2)
+    import secrets
+    count = secrets.SystemRandom().randint(min_count, max_count)
+    rows = rows[:count]
+    if OUT.exists():
+        for old in OUT.glob("*.jpg"):
+            old.unlink()
+    OUT.mkdir(parents=True, exist_ok=True)
+    print(f"QUANTIDADE DE STORIES NESTA RODADA: {count}")
+    for i, p in enumerate(rows, 1):
+        make_story(p, i)
+    generated = sorted(OUT.glob("*.jpg"))
+    print(f"RESULTADO: {len(generated)}/{count} artes geradas. Nenhuma publicação foi feita.")
+    if len(generated) != count:
+        sys.exit(2)
+    (OUT / "story_count.txt").write_text(str(count), encoding="utf-8")
 
 if __name__=="__main__": main()
