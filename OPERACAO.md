@@ -24,3 +24,13 @@
 
 ## Configuração do GitHub Pages
 O workflow `.github/workflows/pages.yml` foi adicionado. No GitHub, abra Settings → Pages e selecione **GitHub Actions** como Build and deployment. Depois, execute o workflow Pages manualmente ou faça uma alteração em `painel/**`. A URL só estará ativa quando o deploy terminar com sucesso.
+
+
+## Prévia visual dos Stories (novo)
+- O script `gerar_story.py` cria artes verticais 1080×1920 usando os dados e a imagem já cadastrados em `produtos.csv`.
+- Para gerar a prévia: GitHub → Actions → **Instagram — gerar prévia visual dos Stories** → Run workflow. Escolha 1, 2, 4 ou 8 artes.
+- Ao terminar, abra o run e baixe o artefato **radar-stories-preview** para revisar as imagens.
+- Esta etapa é somente de geração e revisão: não publica no Instagram, não altera preços e não modifica o catálogo.
+- Se uma imagem estiver indisponível ou inválida, aquela arte fica pendente e o workflow sinaliza falha; não inventa imagem.
+- Antes de qualquer publicação, confira manualmente nome, preço atual, preço anterior e correspondência da foto com o anúncio.
+- Stories ainda não estão agendados automaticamente. A publicação continua manual e controlada até validar uma hospedagem pública estável para as artes e o fluxo completo da API da Meta.
