@@ -56,20 +56,28 @@ def make_story(p, index):
     d.text((98,158),"ACHADOS QUE VALEM A PENA",font=font(27,True),fill=ACCENT)
     d.text((75,300),"OFERTA EM DESTAQUE",font=font(34,True),fill=ACCENT)
     photo = get_image(p.get("imagem_url",""))
-    im.paste(photo,(90,385)); d.rounded_rectangle((90,385,990,1145),radius=28,outline=(65,82,110),width=5)
-    y=1200
-    for line in wrap(d,(p.get("produto") or "Oferta").strip(),font(48,True),930)[:2]:
-        d.text((75,y),line,font=font(48,True),fill=WHITE); y+=65
+    # Foto menor para reservar espaço legível para descrição e chamadas de ação.
+    photo = ImageOps.fit(photo, (800, 610), method=Image.Resampling.LANCZOS)
+    im.paste(photo,(140,340)); d.rounded_rectangle((140,340,940,950),radius=28,outline=(65,82,110),width=5)
+    y=1000
+    title=(p.get("produto") or "Oferta").strip()
+    for line in wrap(d,title,font(43,True),930)[:2]:
+        d.text((75,y),line,font=font(43,True),fill=WHITE); y+=57
+    description=(p.get("descricao") or p.get("description") or "Confira os detalhes e as características deste produto no anúncio.").strip()
+    y=max(y+12,1135)
+    for line in wrap(d,description,font(27),920)[:2]:
+        d.text((80,y),line,font=font(27),fill=MUTED); y+=39
     old,current=money(p.get("preco_anterior_brl","")),money(p.get("preco_atual_brl",""))
     if old:
-        label="DE "+old; d.text((80,1390),label,font=font(38),fill=MUTED)
-        box=d.textbbox((80,1390),label,font=font(38)); d.line((box[0],(box[1]+box[3])//2,box[2],(box[1]+box[3])//2),fill=(255,100,100),width=5)
-    d.rounded_rectangle((65,1460,1015,1655),radius=34,fill=GREEN)
-    d.text((105,1482),"POR APENAS",font=font(30,True),fill=(5,45,31))
-    d.text((105,1520),current or "Confira no anúncio",font=font(76,True),fill=(5,45,31))
-    d.rounded_rectangle((65,1700,1015,1825),radius=30,fill=ACCENT)
-    d.text((540,1760),"ACESSE O LINK NA BIO",font=font(40,True),fill=(34,29,18),anchor="mm")
-    d.text((540,1870),"Preço e disponibilidade podem mudar. Confira no anúncio.",font=font(22),fill=MUTED,anchor="mm")
+        label="DE "+old; d.text((80,1260),label,font=font(34),fill=MUTED)
+        box=d.textbbox((80,1260),label,font=font(34)); d.line((box[0],(box[1]+box[3])//2,box[2],(box[1]+box[3])//2),fill=(255,100,100),width=5)
+    d.rounded_rectangle((65,1320,1015,1510),radius=34,fill=GREEN)
+    d.text((105,1340),"POR APENAS",font=font(29,True),fill=(5,45,31))
+    d.text((105,1378),current or "Confira no anúncio",font=font(72,True),fill=(5,45,31))
+    d.rounded_rectangle((65,1540,1015,1665),radius=30,fill=ACCENT)
+    d.text((540,1600),"ACESSE O LINK NA BIO",font=font(40,True),fill=(34,29,18),anchor="mm")
+    d.text((540,1720),"GOSTOU? COMENTE OU RESPONDA ESTE STORY!",font=font(27,True),fill=WHITE,anchor="mm")
+    d.text((540,1840),"Preço e disponibilidade podem mudar. Confira no anúncio.",font=font(21),fill=MUTED,anchor="mm")
     OUT.mkdir(exist_ok=True)
     safe=re.sub(r"[^a-zA-Z0-9_-]+","-",(p.get("produto") or "")).strip("-")[:45] or f"oferta-{index}"
     path=OUT/f"story-{index:02d}-{safe}.jpg"; im.save(path,quality=92,optimize=True); print(f"ARTE GERADA: {path}")
