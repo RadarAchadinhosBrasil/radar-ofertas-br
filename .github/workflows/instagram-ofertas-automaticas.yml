@@ -180,6 +180,59 @@ jobs:
           print("Tamanho:", len(response.content), "bytes")
           PY
 
+      - name: Diagnosticar token e permissões da Meta (sem exibir o token)
+        if: github.event_name == 'schedule' || inputs.acao == 'publicar'
+        env:
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+          IG_GRAPH_API_VERSION: ${{ vars.IG_GRAPH_API_VERSION || secrets.IG_GRAPH_API_VERSION }}
+        run: |
+          python - <<'PY'
+          import os, requests
+
+          token = os.environ.get("IG_ACCESS_TOKEN", "")
+          ig_id = os.environ.get("IG_USER_ID", "")
+          version = os.environ.get("IG_GRAPH_API_VERSION", "")
+          if not all((token, ig_id, version)):
+              print("DIAGNOSTICO: falta token, ID do Instagram ou versão da API.")
+              raise SystemExit(0)
+
+          base = f"https://graph.facebook.com/{version}"
+          for label, url, params in [
+              ("PERMISSOES", f"{base}/me/permissions", {"access_token": token}),
+              ("CONTA_INSTAGRAM", f"{base}/{ig_id}", {
+                  "fields": "id,username", "access_token": token
+              }),
+          ]:
+              try:
+                  response = requests.get(url, params=params, timeout=30)
+                  try:
+                      data = response.json()
+                  except Exception:
+                      data = {"body": response.text[:500]}
+                  if response.ok:
+                      if label == "PERMISSOES":
+                          entries = data.get("data", [])
+                          print("PERMISSOES_CONCEDIDAS:", [
+                              item.get("permission") for item in entries
+                              if item.get("status") == "granted"
+                          ])
+                          print("PERMISSOES_NAO_CONCEDIDAS:", [
+                              {"permission": item.get("permission"),
+                               "status": item.get("status")}
+                              for item in entries if item.get("status") != "granted"
+                          ])
+                      else:
+                          print("CONTA_INSTAGRAM_VALIDADA:", data)
+                  else:
+                      error = data.get("error", {})
+                      print(f"{label}_ERRO: HTTP {response.status_code}; "
+                            f"tipo={error.get('type')}; código={error.get('code')}; "
+                            f"mensagem={error.get('message')}")
+              except Exception as exc:
+                  print(f"{label}_FALHA_DE_REDE: {type(exc).__name__}: {exc}")
+          PY
+
       - name: Publicar uma oferta no Instagram
         if: github.event_name == 'schedule' || inputs.acao == 'publicar'
         env:
