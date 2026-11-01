@@ -99,12 +99,47 @@ def main():
         session.headers.update({"User-Agent": "Mozilla/5.0 RadarOfertasBR/1.0"})
         image = fetch_best_image(session, original)
 
-    # Corrige orientação EXIF e mantém a foto inteira, sem esticar nem cortar.
+    # Corrige orientação EXIF e prepara uma arte vertical 4:5 para o Feed.
+    # A foto nunca é ampliada: preserva a resolução real da fonte e evita pixelização.
     image = ImageOps.exif_transpose(image).convert("RGB")
-    image.thumbnail((2160, 2700), Image.Resampling.LANCZOS)
+    source_size = image.size
 
-    # JPEG de alta qualidade; sem ampliar artificialmente imagens pequenas.
-    image.save(destination, "JPEG", quality=97, subsampling=0, optimize=True, progressive=True)
+    canvas_w, canvas_h = 1080, 1350
+    background = Image.new("RGB", (canvas_w, canvas_h), (245, 246, 248))
+
+    # Cartão branco com margem ampla para dar acabamento sem cortar o produto.
+    card = Image.new("RGB", (980, 1190), (255, 255, 255))
+    card_x = (canvas_w - card.width) // 2
+    card_y = (canvas_h - card.height) // 2
+
+    # Sombra suave atrás do cartão.
+    shadow = Image.new("RGBA", (canvas_w, canvas_h), (0, 0, 0, 0))
+    from PIL import ImageDraw, ImageFilter
+    shadow_draw = ImageDraw.Draw(shadow)
+    shadow_draw.rounded_rectangle(
+        (card_x + 4, card_y + 12, card_x + card.width + 4, card_y + card.height + 12),
+        radius=30, fill=(20, 25, 35, 28)
+    )
+    shadow = shadow.filter(ImageFilter.GaussianBlur(18))
+    background = Image.alpha_composite(background.convert("RGBA"), shadow).convert("RGB")
+
+    # Redimensiona apenas para caber; jamais aumenta acima dos pixels originais.
+    image.thumbnail((900, 1080), Image.Resampling.LANCZOS)
+    image_x = (card.width - image.width) // 2
+    image_y = (card.height - image.height) // 2
+    card.paste(image, (image_x, image_y))
+
+    # Cantos arredondados no cartão, com a foto inteira preservada.
+    mask = Image.new("L", card.size, 0)
+    ImageDraw.Draw(mask).rounded_rectangle(
+        (0, 0, card.width - 1, card.height - 1), radius=30, fill=255
+    )
+    background.paste(card, (card_x, card_y), mask)
+    background.save(destination, "JPEG", quality=97, subsampling=0, optimize=True, progressive=True)
+
+    print(f"Resolução real da origem: {source_size[0]}x{source_size[1]}")
+    print("Arte final para Instagram:", (canvas_w, canvas_h))
+    print("Foto do produto preservada em:", image.size)
 
     mapping = {original: "instagram-assets/" + name}
     (ROOT / "instagram_images.json").write_text(
