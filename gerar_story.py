@@ -104,9 +104,11 @@ def main():
         now = datetime.now(timezone.utc)
         slots = {12: 0, 15: 1, 18: 2, 21: 3}
         slot_index = slots.get(now.hour, now.hour % 4)
-        offset = ((now.timetuple().tm_yday - 1) * 4 + slot_index) % len(rows)
+        # Reserva um bloco de até 5 produtos por horário, evitando repetição
+        # entre os quatro horários do mesmo dia (catálogo atual: 81 produtos).
+        offset = ((now.timetuple().tm_yday - 1) * 20 + slot_index * 5) % len(rows)
         rows = rows[offset:] + rows[:offset]
-        print(f"ROTAÇÃO DE STORIES: produto inicial {offset + 1}/{len(rows)}")
+        print(f"ROTAÇÃO DO HORÁRIO: bloco iniciado no produto {offset + 1}/{len(rows)}")
     import secrets
     count = secrets.SystemRandom().randint(min_count, max_count)
     rows = rows[:count]
