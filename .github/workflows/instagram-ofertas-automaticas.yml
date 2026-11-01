@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
     inputs:
       slot:
-        description: "Lote UTC para teste manual"
+        description: "Lote UTC"
         required: true
         type: choice
         default: "0 12 * * *"
@@ -22,6 +22,8 @@ on:
 
 permissions:
   contents: read
+  pages: write
+  id-token: write
 
 concurrency:
   group: instagram-ofertas
@@ -30,6 +32,9 @@ concurrency:
 jobs:
   publicar:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+
     steps:
       - name: Baixar repositório
         uses: actions/checkout@v4
@@ -40,7 +45,7 @@ jobs:
           python-version: "3.12"
 
       - name: Instalar dependências
-        run: pip install requests
+        run: pip install requests pillow
 
       - name: Definir horário do lote
         id: slot
@@ -53,20 +58,67 @@ jobs:
           else
             SLOT="$EVENT_SCHEDULE"
           fi
+
           case "$SLOT" in
             "0 12 * * *"|"0 15 * * *"|"0 18 * * *"|"0 21 * * *") ;;
             *) echo "Horário não reconhecido: $SLOT"; exit 1 ;;
           esac
+
           echo "value=$SLOT" >> "$GITHUB_OUTPUT"
+
+      - name: Converter imagem do produto para JPG
+        env:
+          SLOT_UTC: ${{ steps.slot.outputs.value }}
+        run: python preparar_imagens_instagram.py
+
+      - name: Configurar GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Enviar imagem JPG para Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Publicar imagem no GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Validar imagem pública
+        env:
+          PAGES_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          python - <<'PY'
+          import json, os, requests
+          from pathlib import Path
+
+          base = os.environ["PAGES_URL"].rstrip("/")
+          mapping = json.loads(
+              Path("instagram_images.json").read_text(encoding="utf-8")
+          )
+          relative = next(iter(mapping.values()))
+          url = base + "/" + relative.lstrip("/")
+
+          r = requests.get(url, timeout=45)
+          r.raise_for_status()
+
+          if "image/jpeg" not in r.headers.get("Content-Type", "").lower():
+              raise SystemExit("A imagem publicada não é JPG.")
+
+          if len(r.content) < 10000:
+              raise SystemExit("A imagem pública parece incompleta.")
+
+          print("Imagem JPG pública validada:", url)
+          print("Tamanho:", len(r.content), "bytes")
+          PY
 
       - name: Publicar uma oferta no Instagram
         env:
           IG_ACTION: publish
           SLOT_UTC: ${{ steps.slot.outputs.value }}
           IG_MEDIA_TYPE: IMAGE
-          IG_MAX_PUBLICATIONS: "1"
           CONFIRMAR_PUBLICACAO: ${{ secrets.CONFIRMAR_PUBLICACAO }}
           IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
           IG_USER_ID: ${{ secrets.IG_USER_ID }}
           IG_GRAPH_API_VERSION: ${{ vars.IG_GRAPH_API_VERSION || secrets.IG_GRAPH_API_VERSION }}
+          PAGES_URL: ${{ steps.deployment.outputs.page_url }}
         run: python publicar_instagram.py
