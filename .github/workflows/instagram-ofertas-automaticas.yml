@@ -18,6 +18,14 @@ on:
           - "0 15 * * *"
           - "0 18 * * *"
           - "0 21 * * *"
+      acao:
+        description: "Modo manual: testar sem publicar ou publicar no Feed"
+        required: true
+        type: choice
+        default: "preview"
+        options:
+          - "preview"
+          - "publicar"
 
 permissions:
   contents: read
@@ -173,6 +181,7 @@ jobs:
           PY
 
       - name: Publicar uma oferta no Instagram
+        if: github.event_name == 'schedule' || inputs.acao == 'publicar'
         env:
           IG_ACTION: publish
           SLOT_UTC: ${{ steps.slot.outputs.value }}
