@@ -1,0 +1,42 @@
+name: WhatsApp — teste individual (manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmar_envio:
+        description: "Marque true SOMENTE após coexistência, template aprovado e opt-in confirmados"
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  whatsapp-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar repositório
+        uses: actions/checkout@v4
+
+      - name: Preparar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validar prévia sem enviar
+        if: ${{ inputs.confirmar_envio == false }}
+        run: python whatsapp_cloud.py
+
+      - name: Enviar uma mensagem de teste
+        if: ${{ inputs.confirmar_envio == true }}
+        env:
+          WA_ACCESS_TOKEN: ${{ secrets.WA_ACCESS_TOKEN }}
+          WA_PHONE_NUMBER_ID: ${{ secrets.WA_PHONE_NUMBER_ID }}
+          WA_TEST_RECIPIENT: ${{ secrets.WA_TEST_RECIPIENT }}
+          WA_TEST_RECIPIENT_OPT_IN: ${{ secrets.WA_TEST_RECIPIENT_OPT_IN }}
+          WA_CONFIRM_SEND: ${{ secrets.WA_CONFIRM_SEND }}
+          WA_GRAPH_API_VERSION: ${{ vars.WA_GRAPH_API_VERSION }}
+          WA_TEMPLATE_NAME: ${{ vars.WA_TEMPLATE_NAME }}
+          WA_TEMPLATE_LANGUAGE: ${{ vars.WA_TEMPLATE_LANGUAGE }}
+        run: python whatsapp_cloud.py --send
