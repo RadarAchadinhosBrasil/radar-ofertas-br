@@ -1,4 +1,4 @@
-name: Instagram — publicar 1 Story de teste
+name: Instagram — Stories automáticos (3 a 5 por rodada)
 on:
   schedule:
     - cron: "30 12 * * *"
@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     inputs:
       confirmar:
-        description: "Digite SIM para autorizar a publicação de 1 Story"
+        description: "Digite SIM para autorizar a publicação manual de 3 a 5 Stories"
         required: true
         type: choice
         options: ["NAO", "SIM"]
@@ -99,15 +99,27 @@ jobs:
           if not base.startswith("https://"): raise SystemExit("GitHub Pages não retornou uma URL HTTPS válida: "+repr(base))
           from pathlib import Path
           count=int(Path("story-preview/story_count.txt").read_text(encoding="utf-8").strip())
+          import time
           for i in range(1,count+1):
               url=f"{base}/story-assets/story-{i:02d}.jpg"
-              r=requests.get(url,timeout=45)
-              r.raise_for_status()
-              if not r.headers.get("Content-Type","").lower().startswith("image/"):
-                  raise SystemExit(f"A URL pública não retornou uma imagem: {url}")
-              if len(r.content)<10000:
-                  raise SystemExit(f"A imagem pública parece incompleta: {url}")
-              print("Imagem pública validada:",url,"bytes:",len(r.content))
+              last_error = None
+              for tentativa in range(12):
+                  try:
+                      r=requests.get(url,timeout=45,headers={"Cache-Control":"no-cache"})
+                      r.raise_for_status()
+                      if not r.headers.get("Content-Type","").lower().startswith("image/"):
+                          raise RuntimeError(f"Content-Type inesperado: {r.headers.get('Content-Type')}")
+                      if len(r.content)<10000:
+                          raise RuntimeError(f"Imagem incompleta: {len(r.content)} bytes")
+                      print("Imagem pública validada:",url,"bytes:",len(r.content))
+                      break
+                  except Exception as exc:
+                      last_error = exc
+                      print(f"Tentativa {tentativa+1}/12 falhou para {url}: {type(exc).__name__}: {exc}")
+                      if tentativa < 11:
+                          time.sleep(10)
+              else:
+                  raise SystemExit(f"Não foi possível validar a imagem pública após 12 tentativas: {url}; último erro: {last_error}")
           PY
       - name: Publicar de 3 a 5 Stories no Instagram
         env:
