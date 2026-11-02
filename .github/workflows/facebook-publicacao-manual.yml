@@ -1,0 +1,47 @@
+name: Facebook Page — publicação manual
+on:
+  workflow_dispatch:
+    inputs:
+      confirmar:
+        description: "Digite SIM para publicar na Página"
+        required: true
+        type: choice
+        options: ["NAO", "SIM"]
+        default: "NAO"
+      modo:
+        description: "Onde publicar"
+        required: true
+        type: choice
+        options: ["feed", "story"]
+        default: "feed"
+      imagem:
+        description: "URL HTTPS pública da imagem"
+        required: true
+        type: string
+      texto:
+        description: "Legenda do Feed (obrigatória para Feed; ignorada em Story)"
+        required: false
+        type: string
+permissions:
+  contents: read
+jobs:
+  publicar:
+    if: ${{ inputs.confirmar == 'SIM' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Instalar dependência
+        run: pip install requests
+      - name: Validar configuração e publicar
+        env:
+          FB_CONFIRM: ${{ inputs.confirmar }}
+          FB_MODE: ${{ inputs.modo }}
+          FB_IMAGE_URL: ${{ inputs.imagem }}
+          FB_MESSAGE: ${{ inputs.texto }}
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+          FB_PAGE_ACCESS_TOKEN: ${{ secrets.FB_PAGE_ACCESS_TOKEN }}
+          FB_GRAPH_API_VERSION: ${{ secrets.FB_GRAPH_API_VERSION }}
+        run: python publicar_facebook.py
