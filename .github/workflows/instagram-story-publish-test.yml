@@ -41,6 +41,7 @@ jobs:
           STORY_COUNT_MIN: "3"
           STORY_COUNT_MAX: "5"
           STORY_ROTATE: "1"
+          STORY_SLOT_UTC: ${{ github.event.schedule }}
         run: |
           python gerar_story.py
           echo "count=$(cat story-preview/story_count.txt)" >> "$GITHUB_OUTPUT"
