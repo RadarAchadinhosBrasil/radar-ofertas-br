@@ -102,13 +102,25 @@ def main():
     if os.getenv("STORY_ROTATE", "").strip() == "1":
         from datetime import datetime, timezone
         now = datetime.now(timezone.utc)
-        slots = {12: 0, 15: 1, 18: 2, 21: 3}
-        slot_index = slots.get(now.hour, now.hour % 4)
-        # Reserva um bloco de até 5 produtos por horário, evitando repetição
-        # entre os quatro horários do mesmo dia (catálogo atual: 81 produtos).
+        scheduled = os.getenv("STORY_SLOT_UTC", "").strip()
+        slots = {
+            "30 12 * * *": 0,
+            "30 15 * * *": 1,
+            "30 18 * * *": 2,
+            "30 21 * * *": 3,
+        }
+        if scheduled:
+            if scheduled not in slots:
+                raise SystemExit(f"Horário cron de Story não reconhecido: {scheduled}")
+            slot_index = slots[scheduled]
+        else:
+            # Prévia/manual sem cron: usa o horário atual apenas como fallback.
+            slot_index = min(3, max(0, (now.hour - 12) // 3))
+        # Cada horário recebe um bloco fixo de até 5 itens; usa o cron real
+        # para não repetir o bloco quando o GitHub atrasar o início do job.
         offset = ((now.timetuple().tm_yday - 1) * 20 + slot_index * 5) % len(rows)
         rows = rows[offset:] + rows[:offset]
-        print(f"ROTAÇÃO DO HORÁRIO: bloco iniciado no produto {offset + 1}/{len(rows)}")
+        print(f"ROTAÇÃO DO HORÁRIO: slot={slot_index + 1}/4; bloco iniciado no produto {offset + 1}/{len(rows)}")
     import secrets
     count = secrets.SystemRandom().randint(min_count, max_count)
     rows = rows[:count]
