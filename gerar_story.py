@@ -99,30 +99,33 @@ def main():
     rows = unique
     if len(rows) < max_count:
         raise SystemExit(f"Catálogo tem apenas {len(rows)} produtos diferentes; são necessários {max_count}.")
-    if os.getenv("STORY_ROTATE", "").strip() == "1":
+    scheduled = os.getenv("STORY_SLOT_UTC", "").strip()
+    if scheduled:
         from datetime import datetime, timezone
         now = datetime.now(timezone.utc)
-        scheduled = os.getenv("STORY_SLOT_UTC", "").strip()
         slots = {
             "30 12 * * *": 0,
             "30 15 * * *": 1,
             "30 18 * * *": 2,
             "30 21 * * *": 3,
         }
-        if scheduled:
-            if scheduled not in slots:
-                raise SystemExit(f"Horário cron de Story não reconhecido: {scheduled}")
-            slot_index = slots[scheduled]
-        else:
-            # Prévia/manual sem cron: usa o horário atual apenas como fallback.
-            slot_index = min(3, max(0, (now.hour - 12) // 3))
-        # Cada horário recebe um bloco fixo de até 5 itens; usa o cron real
-        # para não repetir o bloco quando o GitHub atrasar o início do job.
-        offset = ((now.timetuple().tm_yday - 1) * 20 + slot_index * 5) % len(rows)
+        if scheduled not in slots:
+            raise SystemExit(f"Horário cron de Story não reconhecido: {scheduled}")
+        slot_index = slots[scheduled]
+        # Agenda determinística 3/4/5/4 = 16 Stories por dia. O cursor
+        # avança pela quantidade realmente publicada, sem pular os itens
+        # restantes de um bloco quando uma rodada tem menos de 5 Stories.
+        counts = [3, 4, 5, 4]
+        count = counts[slot_index]
+        offset = (((now.date().toordinal() - 1) * sum(counts))
+                  + sum(counts[:slot_index])) % len(rows)
         rows = rows[offset:] + rows[:offset]
-        print(f"ROTAÇÃO DO HORÁRIO: slot={slot_index + 1}/4; bloco iniciado no produto {offset + 1}/{len(rows)}")
-    import secrets
-    count = secrets.SystemRandom().randint(min_count, max_count)
+        print(f"ROTAÇÃO DO HORÁRIO: slot={slot_index + 1}/4; início={offset + 1}/{len(rows)}; quantidade={count}")
+    else:
+        # Execução manual sem cron: mantém a faixa configurada de 3 a 5.
+        import secrets
+        count = secrets.SystemRandom().randint(min_count, max_count)
+        offset = 0
     rows = rows[:count]
     if OUT.exists():
         for old in OUT.glob("*.jpg"):
