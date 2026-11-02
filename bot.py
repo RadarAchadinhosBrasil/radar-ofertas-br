@@ -167,6 +167,10 @@ async def main():
     me = await bot.get_me()
     print(f"Bot conectado: @{me.username}")
     print(f"Ofertas neste período: {quantidade}")
+    print("ÍNDICE DE INÍCIO DO LOTE:", base + inicio)
+    print("PRODUTOS SELECIONADOS NESTA RODADA:")
+    for posicao, produto in enumerate(selecionados, start=1):
+        print(f"SELECIONADO {posicao}/{quantidade}: {produto['produto']}")
 
     for i, produto in enumerate(selecionados):
         print(f"Publicando {i + 1}/{quantidade}: {produto['produto']}")
