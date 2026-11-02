@@ -33,7 +33,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: instagram-ofertas
+  group: pages
   cancel-in-progress: false
 
 jobs:
