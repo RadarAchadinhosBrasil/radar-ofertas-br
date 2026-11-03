@@ -3,6 +3,20 @@
 import os, time
 import requests
 
+def raise_meta_error(response, etapa):
+    try:
+        response.raise_for_status()
+    except requests.HTTPError as exc:
+        # A Meta normalmente devolve o motivo real em JSON; registrar sem expor o token.
+        try:
+            detalhe = response.json()
+        except ValueError:
+            detalhe = response.text[:3000]
+        raise RuntimeError(
+            f"Erro da Meta na etapa '{etapa}': HTTP {response.status_code}. "
+            f"Resposta: {detalhe}"
+        ) from exc
+
 def main():
     version = os.getenv("IG_GRAPH_API_VERSION", "").strip()
     token = os.getenv("IG_ACCESS_TOKEN", "").strip()
@@ -24,30 +38,30 @@ def main():
             response = session.post(f"{api}/{ig_id}/media", data={
                 "image_url": image, "media_type": "STORIES", "access_token": token
             }, timeout=45)
-            response.raise_for_status()
+            raise_meta_error(response, f"criação do Story {index} (imagem: {image})")
             creation_id = response.json().get("id")
             if not creation_id:
-                raise RuntimeError(f"Meta não retornou ID de mídia para Story {index}.")
+                raise RuntimeError(f"Meta não retornou ID de mídia para Story {index}. Resposta: {response.text[:1000]}")
             for _ in range(18):
                 status = session.get(f"{api}/{creation_id}", params={
                     "fields": "status_code", "access_token": token
                 }, timeout=30)
-                status.raise_for_status()
+                raise_meta_error(status, f"consulta do processamento do Story {index}")
                 code = status.json().get("status_code")
                 if code == "FINISHED":
                     break
                 if code == "ERROR":
-                    raise RuntimeError(f"Meta não conseguiu processar o Story {index}.")
+                    raise RuntimeError(f"Meta não conseguiu processar o Story {index}. Resposta: {status.text[:1000]}")
                 time.sleep(5)
             else:
                 raise RuntimeError(f"Tempo esgotado aguardando processamento do Story {index}.")
             published = session.post(f"{api}/{ig_id}/media_publish", data={
                 "creation_id": creation_id, "access_token": token
             }, timeout=45)
-            published.raise_for_status()
+            raise_meta_error(published, f"publicação do Story {index}")
             media_id = published.json().get("id")
             if not media_id:
-                raise RuntimeError(f"Meta não confirmou a publicação do Story {index}.")
+                raise RuntimeError(f"Meta não confirmou a publicação do Story {index}. Resposta: {published.text[:1000]}")
             published_ids.append(media_id)
             print(f"STORY {index}/{count} PUBLICADO. media_id={media_id}")
             if index < count:
