@@ -5,7 +5,7 @@ import requests
 API_VERSION = os.environ["IG_GRAPH_API_VERSION"]
 IG_ID = os.environ["IG_USER_ID"]
 TOKEN = os.environ["IG_ACCESS_TOKEN"]
-IMAGE_URL = "https://raw.githubusercontent.com/RadarAchadinhosBrasil/radar-ofertas-br/main/instagram-reminder-assets/lembrete-sexta.jpg"
+IMAGE_URL = os.environ["IG_REMINDER_IMAGE_URL"]
 
 CAPTION = """🔥 SEXTA-FEIRA DE OFERTAS!
 
