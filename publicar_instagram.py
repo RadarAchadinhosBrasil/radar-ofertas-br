@@ -12,7 +12,7 @@ import requests
 
 ROOT = Path(__file__).resolve().parent
 CSV = ROOT / "produtos.csv"
-SLOTS = ["0 12 * * *", "0 15 * * *", "0 18 * * *", "0 21 * * *"]
+SLOTS = ["17 11 * * *","17 13 * * *","17 15 * * *","17 17 * * *","17 19 * * *","17 21 * * *","17 23 * * *","17 1 * * *"]
 
 
 def load_products():
@@ -34,12 +34,22 @@ def load_products():
 
 def choose(products, slot):
     if slot not in SLOTS:
-        raise ValueError("Horário inválido.")
-    start = SLOTS.index(slot)
-    base = __import__("datetime").datetime.now(
-        __import__("datetime").timezone.utc
-    ).date().toordinal() % len(products)
-    return products[(base + start) % len(products)]
+        raise ValueError('Horário inválido.')
+    return next_feed_product()[0]
+
+def next_feed_product():
+    products = load_products()
+    eligible = [p for p in products if p.get("link_afiliado", "").startswith("https://") and p.get("imagem_url", "").startswith("https://")]
+    if not eligible:
+        raise ValueError("Nenhum produto com link e imagem HTTPS válidos.")
+    state_path = ROOT / "instagram_feed_state.json"
+    state = json.loads(state_path.read_text(encoding="utf-8")) if state_path.exists() else {"cycle": 1, "posted_links": []}
+    posted = set(state.get("posted_links", []))
+    remaining = [p for p in eligible if p.get("link_afiliado") not in posted]
+    if not remaining:
+        state = {"cycle": int(state.get("cycle", 1)) + 1, "posted_links": []}
+        remaining = eligible
+    return remaining[0], state
 
 
 def caption(p):
@@ -147,12 +157,13 @@ def publish(session, api, ig_id, token, product, media_type, image_url):
 
 def main():
     slot = os.getenv("SLOT_UTC", "")
-    product = choose(load_products(), slot)
+    product, rotation_state = next_feed_product()
 
     if os.getenv("IG_ACTION", "preview").lower() != "publish":
         print("Prévia segura. Nenhuma publicação enviada.")
         print(product["produto"])
         print(caption(product))
+        print('Prévia: rodízio não avançado.')
         return
 
     if os.getenv("CONFIRMAR_PUBLICACAO") != "SIM":
@@ -202,6 +213,12 @@ def main():
             session, api, ig_id, token, product, mode, image_url
         )
         print(f"PUBLICADO ({mode}): {product['produto']} | media_id={media_id}")
+        rotation_state.setdefault("posted_links", []).append(product["link_afiliado"])
+        (ROOT / "instagram_feed_state.json").write_text(
+            json.dumps(rotation_state, ensure_ascii=False, indent=2) + "\\n",
+            encoding="utf-8"
+        )
+        print("Rodízio atualizado:", len(rotation_state["posted_links"]), "itens publicados nesta volta.")
 
 
 if __name__ == "__main__":
