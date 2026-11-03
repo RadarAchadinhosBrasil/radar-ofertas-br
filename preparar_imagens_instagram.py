@@ -12,7 +12,7 @@ from PIL import Image, ImageOps
 
 ROOT = Path(__file__).resolve().parent
 OUT = ROOT / "_site" / "instagram-assets"
-SLOTS = ["0 12 * * *", "0 15 * * *", "0 18 * * *", "0 21 * * *"]
+SLOTS = ["17 11 * * *","17 13 * * *","17 15 * * *","17 17 * * *","17 19 * * *","17 21 * * *","17 23 * * *","17 1 * * *"]
 MIN_SIDE = 700
 
 
@@ -81,11 +81,16 @@ def main():
     if not products:
         raise SystemExit("Nenhum produto válido no catálogo.")
 
-    start = SLOTS.index(slot)
-    base = __import__("datetime").datetime.now(
-        __import__("datetime").timezone.utc
-    ).date().toordinal() % len(products)
-    product = products[(base + start) % len(products)]
+    state_path = ROOT / "instagram_feed_state.json"
+    state = json.loads(state_path.read_text(encoding="utf-8")) if state_path.exists() else {"cycle": 1, "posted_links": []}
+    eligible = [p for p in products if p.get("link_afiliado", "").startswith("https://") and p.get("imagem_url", "").startswith("https://")]
+    posted = set(state.get("posted_links", []))
+    remaining = [p for p in eligible if p.get("link_afiliado") not in posted]
+    if not remaining:
+        remaining = eligible
+    if not remaining:
+        raise SystemExit("Nenhum produto com link e imagem HTTPS válidos.")
+    product = remaining[0]
 
     original = product.get("imagem_url", "").strip()
     if not original.startswith("https://"):
