@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: instagram-weekly-reminder
@@ -18,10 +18,46 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: true
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Create and publish public JPG asset
+        run: |
+          pip install pillow
+          python - <<'PY'
+          from PIL import Image, ImageDraw, ImageFont
+          from pathlib import Path
+          out = Path("instagram-reminder-assets")
+          out.mkdir(exist_ok=True)
+          im = Image.new("RGB", (1080, 1350), (14, 16, 20))
+          d = ImageDraw.Draw(im)
+          bold = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+          regular = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
+          def txt(y, value, size, color, font=bold):
+              d.text((540, y), value, font=ImageFont.truetype(font, size), fill=color, anchor="mm")
+          yellow=(255,196,0); white=(255,255,255)
+          d.rounded_rectangle((55,55,1025,1295), radius=48, outline=yellow, width=10)
+          d.rounded_rectangle((120,170,960,420), radius=42, fill=yellow)
+          txt(295,"RADAR DE OFERTAS BR",62,(15,17,20))
+          txt(560,"SEXTA-FEIRA",86,white)
+          txt(670,"DE OFERTAS!",100,yellow)
+          d.rounded_rectangle((150,790,930,1010), radius=34, outline=yellow, width=5)
+          txt(860,"OFERTAS TODOS OS DIAS",43,white)
+          txt(930,"Economize com a gente",38,(220,220,220),regular)
+          txt(1100,"ENTRE NO NOSSO TELEGRAM",39,yellow)
+          txt(1170,"LINK NA BIO  •  @RADARACHADINHOSBRASIL",25,white)
+          im.save(out/"lembrete-sexta.jpg","JPEG",quality=94,optimize=True)
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add instagram-reminder-assets/lembrete-sexta.jpg
+          if ! git diff --cached --quiet; then
+            git commit -m "Adiciona arte fixa do lembrete semanal"
+            git push
+          fi
       - name: Install dependency
         run: pip install requests
       - name: Publish Friday reminder
