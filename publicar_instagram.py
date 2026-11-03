@@ -215,7 +215,7 @@ def main():
         print(f"PUBLICADO ({mode}): {product['produto']} | media_id={media_id}")
         rotation_state.setdefault("posted_links", []).append(product["link_afiliado"])
         (ROOT / "instagram_feed_state.json").write_text(
-            json.dumps(rotation_state, ensure_ascii=False, indent=2) + "\\n",
+            json.dumps(rotation_state, ensure_ascii=False, indent=2) + "\n",
             encoding="utf-8"
         )
         print("Rodízio atualizado:", len(rotation_state["posted_links"]), "itens publicados nesta volta.")
