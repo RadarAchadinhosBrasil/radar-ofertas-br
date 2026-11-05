@@ -202,23 +202,74 @@ function parseCSV(text){const rows=[];let row=[],field='',quoted=false;for(let i
 function money(v){const n=Number(String(v||'').replace(',','.'));return Number.isFinite(n)&&n>0?n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}):''}
 let products=[];
 const sinonimosBusca={
-  panela:['panela','panelas','frigideira','jogo de panelas'],panelas:['panela','panelas','frigideira'],
-  frigideira:['frigideira','panela','panelas'],fone:['fone','fones','headphone','headphones','headset','auricular','earbuds'],
-  'fone de ouvido':['fone','headphone','headset','auricular','earbuds'],headphone:['fone','headphone','headset','auricular'],
-  celular:['celular','smartphone','iphone','android','telefone'],smartphone:['celular','smartphone','telefone'],
-  telefone:['celular','smartphone','telefone'],tv:['tv','televisao','smart tv'],televisao:['tv','televisao','smart tv'],
-  carregador:['carregador','fonte usb','adaptador usb'],cabo:['cabo','cabo usb','carregador'],
-  tenis:['tenis','sapatilha'],sapato:['sapato','tenis','calcado'],chinelo:['chinelo','sandalia','slide'],
-  roupa:['roupa','camiseta','camisa','calca','meia','bermuda'],camiseta:['camiseta','camisa','polo'],
-  perfume:['perfume','colonia','eau de parfum','eau de toilette'],creatina:['creatina','suplemento'],
-  academia:['creatina','suplemento','fitness'],travesseiro:['travesseiro','travesseiros','almofada'],
-  almofada:['almofada','travesseiro'],aspirador:['aspirador','aspirador de po'],
-  ventilador:['ventilador','circulador de ar'],liquidificador:['liquidificador','mixer'],
-  natal:['natal','arvore de natal','pisca pisca','enfeite'],lixeira:['lixeira','lixo'],
-  toalha:['toalha','toalhas'],meia:['meia','meias'],barbeador:['barbeador','aparador','oneblade'],
+  // Cozinha
+  panela:['panela','panelas','pipoqueira','tapioqueira'],frigideira:['frigideira','panelas','panela'],
+  pressao:['pressao','panela de pressao'],pipoqueira:['pipoqueira','panela pipoca'],
+  pipoca:['pipoqueira','panela pipoca'],tapioca:['tapioqueira','tapioca'],
+  chaleira:['chaleira'],sanduicheira:['sanduicheira','grill'],grill:['grill','sanduicheira'],
+  mixer:['mixer','liquidificador'],liquidificador:['liquidificador','mixer'],
+  talher:['talher','talheres','faqueiro'],talheres:['talheres','talher','faqueiro'],
+  faqueiro:['faqueiro','talheres'],escorredor:['escorredor','escorredor de louca'],
+  tempero:['tempero','porta temperos'],temperos:['temperos','porta temperos'],
+  copo:['copo','copo termico'],garrafa:['copo termico','garrafa termica'],
+  pano:['pano de prato','pano'],prato:['pano de prato','prato'],
+  // Casa e limpeza
+  aspirador:['aspirador','extratora','lavadora'],extratora:['extratora','aspirador','limpeza'],
+  lavadora:['lavadora','lavadora de alta pressao','desobstruidora'],
+  mop:['mop','esfregao','limpeza'],esfregao:['mop','esfregao'],
+  limpeza:['mop','aspirador','extratora','lavadora','papa bolinha'],
+  lixeira:['lixeira','lixo'],espelho:['espelho'],cortina:['cortina','blackout'],
+  blackout:['blackout','cortina'],colchao:['colchao','inflavel'],
+  cama:['jogo de cama','colchao','travesseiro','capa protetora colchao'],
+  travesseiro:['travesseiro','travesseiros'],almofada:['travesseiro','almofada'],
+  papa:['papa bolinha','removedor de fiapos'],fiapos:['papa bolinha','removedor de fiapos'],
+  // Roupas e calçados
+  roupa:['camiseta','camisa','polo','calca','bermuda','short','blusa','legging','cueca','calcinha','sutia'],
+  camiseta:['camiseta','camisetas'],camisa:['camisa','camiseta','polo'],
+  polo:['polo','camisa polo'],hering:['hering','polo'],
+  calca:['calca','jeans','legging','jogger'],jeans:['jeans','calca jeans'],
+  bermuda:['bermuda','shorts'],short:['short','bermuda','shorts'],
+  shorts:['shorts','short','bermuda'],legging:['legging','calca fitness'],
+  academia:['fitness','academia','legging','bermuda','tenis'],
+  fitness:['fitness','academia','legging','top','bermuda'],
+  top:['top','sutia','fitness'],sutia:['sutia','top'],sutiã:['sutia','top'],
+  cueca:['cueca','boxer'],boxer:['boxer','cueca'],calcinha:['calcinha'],
+  blusa:['blusa','camiseta'],meia:['meia','meias'],meias:['meias','meia'],
+  tenis:['tenis','calcado'],tênis:['tenis','calcado'],sapato:['sapato','mocassim','loafer'],
+  mocassim:['mocassim','loafer','sapato'],loafer:['loafer','mocassim','sapato'],
+  chinelo:['chinelo','slide','havaianas'],havaianas:['havaianas','chinelo'],
+  bota:['bota','galocha'],galocha:['galocha','bota'],bolsa:['bolsa'],
+  mochila:['mochila','bolsa','viagem'],viagem:['mochila','colchao inflavel'],
+  capa:['capa','capa protetora','capa magnetica'],chuva:['capa de chuva','impermeavel'],
+  // Eletrônicos e acessórios
+  celular:['celular','smartphone','iphone'],iphone:['iphone','celular'],
+  carregador:['carregador','fonte usb'],fonte:['fonte usb','carregador'],
+  cabo:['cabo','cabo carregador'],power:['power bank','carregador portatil'],
+  bateria:['power bank','bateria'],fone:['fone','fone de ouvido','headphone','headset'],
+  headphone:['headphone','fone'],headset:['headset','fone'],
+  bluetooth:['bluetooth','fone'],relogio:['relogio','relógio'],
+  relógio:['relogio','relogios'],tomada:['tomada','extensao','filtro de linha'],
+  extensao:['extensao','filtro de linha','regua'],regua:['regua','filtro de linha','extensao'],
+  // Beleza e cuidados
+  perfume:['perfume','colonia'],barbeador:['barbeador','aparador','oneblade'],
+  aparador:['aparador','barbeador','oneblade'],oneblade:['oneblade','barbeador'],
+  skincare:['skincare','protetor solar','principia'],protetor:['protetor solar','skincare'],
+  // Saúde e esporte
+  creatina:['creatina'],whey:['whey','proteina'],proteina:['proteina','whey'],
+  suplemento:['creatina','whey','pre treino'],suplemento:['creatina','whey','pre treino'],
+  treino:['pre treino','creatina','whey','fitness'],pre:['pre treino'],
+  // Ferramentas, carro e moto
   furadeira:['furadeira','parafusadeira'],parafusadeira:['parafusadeira','furadeira'],
-  limpeza:['aspirador','lixeira','limpeza'],cozinha:['panela','panelas','frigideira','talheres']
-};
+  motosserra:['motosserra','serra'],serra:['serra','motosserra'],
+  carro:['lavagem automotiva','kit lavagem automotiva'],automotivo:['automotiva','lavagem automotiva'],
+  lavagem:['lavagem automotiva','kit lavagem'],moto:['capa de chuva','motoboy','bota'],
+  motoboy:['motoboy','capa de chuva','galocha'],
+  // Iluminação, Natal e ventilação
+  natal:['natal','arvore de natal','pisca pisca','enfeite natalino'],
+  arvore:['arvore de natal'],pisca:['pisca pisca','cascata led','fios de fada'],
+  luz:['led','luz','pisca pisca','cascata'],led:['led','pisca pisca','cascata'],
+  ventilador:['ventilador','circulador de ar'],ventilacao:['ventilador','circulador de ar']
+};;
 function correspondeBusca(nome,consulta){
   const texto=normalizar(nome), palavras=normalizar(consulta).split(' ').filter(p=>p.length>1&&!['de','da','do','das','dos','para','com','e'].includes(p));
   if(!palavras.length)return true;
