@@ -52,6 +52,49 @@ def next_feed_product():
     return remaining[0], state
 
 
+def hashtags(p):
+    """Hashtags específicas por produto, combinadas com a identidade da marca."""
+    nome = (p.get("produto") or "").lower()
+
+    categorias = [
+        (("barbeador", "oneblade", "aparador", "depilador"),
+         ("#CuidadosPessoais", "#BarbeadorEletrico")),
+        (("arvore de natal", "árvore de natal", "pisca", "enfeite natalino"),
+         ("#DecoracaoNatalina", "#Natal")),
+        (("power bank", "carregador", "cabo usb", "fone", "headset"),
+         ("#AcessoriosParaCelular", "#Tecnologia")),
+        (("tenis", "tênis", "sapato", "sandalia", "chinelo"),
+         ("#Moda", "#Calcados")),
+        (("frigideira", "panela", "air fryer", "cafeteira", "liquidificador"),
+         ("#Cozinha", "#UtilidadesDomesticas")),
+        (("ventilador", "ar-condicionado", "umidificador"),
+         ("#CasaConfortavel", "#Eletroportateis")),
+        (("limpeza", "mop", "aspirador", "extratora"),
+         ("#LimpezaDaCasa", "#CasaOrganizada")),
+        (("creatina", "whey", "halter", "academia", "fitness"),
+         ("#VidaFitness", "#Treino")),
+        (("toalha", "lixeira", "organizador", "tapete", "cortina"),
+         ("#CasaEDecoracao", "#UtilidadesParaCasa")),
+    ]
+
+    especificas = None
+    for termos, tags in categorias:
+        if any(termo in nome for termo in termos):
+            especificas = tags
+            break
+
+    if especificas is None:
+        especificas = ("#AchadosDoDia", "#ComprasInteligentes")
+
+    return " ".join((
+        "#RadarDeOfertasBR",
+        "#Achadinhos",
+        especificas[0],
+        especificas[1],
+        "#OfertasMercadoLivre",
+    ))
+
+
 def caption(p):
     old = p.get("preco_anterior_brl", "").strip()
     try:
@@ -73,10 +116,9 @@ def caption(p):
         "",
         "⚠️ Preço e disponibilidade podem mudar. Confira no anúncio.",
         "",
-        "#RadarDeOfertas #Achadinhos #Ofertas"
+        hashtags(p)
     ]
-    return "\n".join(lines)
-
+    return "\\n".join(lines)
 
 def meta_error(response, operation):
     try:
