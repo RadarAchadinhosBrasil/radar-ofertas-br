@@ -231,7 +231,7 @@ const categoriasBusca={
 function categoriaProduto(nome){
   const n=normalizar(nome);
   if(/\b(tenis|chinelo|sapato|mocassim|loafer|bota|sandalia|sapatênis)\b/.test(n))return 'calcados';
-  if(/\b(calca|camiseta|camisa|polo|bermuda|shorts?|legging|cueca|calcinha|sutia|blusa|meia|cinta|top|bolsa|mochila)\b/.test(n))return 'roupas';
+  if(/\b(calcas?|camisetas?|camisas?|polos?|bermudas?|shorts?|leggings?|cuecas?|calcinhas?|sutias?|blusas?|meias?|cintas?|tops?)\b/.test(n))return 'roupas';
   if(/\b(mop|aspirador|extratora|lavadora|desobstruidora|papa bolinha|lixeira|limpeza)\b/.test(n))return 'limpeza';
   if(/\b(panela|frigideira|pipoqueira|tapioqueira|chaleira|mixer|sanduicheira|grill|talheres|faqueiro|escorredor|tempero|copo termico|pano de prato)\b/.test(n))return 'cozinha';
   if(/\b(ventilador|purificador|colchao|travesseiro|cortina|espelho|jogo de cama)\b/.test(n))return 'casa';
@@ -252,9 +252,10 @@ function scoreBusca(nome,consulta){
     return categoriasBusca[bruto[0]].includes(categoriaProduto(nome))?1:0;
   }
   // Consultas específicas procuram palavras inteiras no nome, nunca palavras aproximadas.
+  const palavrasNome=texto.split(' ');
   const acertos=bruto.every(p=>{
     const termo=normalizar(p);
-    return (' '+texto+' ').includes(' '+termo+' ');
+    return palavrasNome.some(palavra=>palavra===termo||palavra===termo+'s'||palavra===termo+'es');
   });
   return acertos?bruto.length:0;
 }
