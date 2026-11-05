@@ -118,7 +118,7 @@ def caption(p):
         "",
         hashtags(p)
     ]
-    return "\\n".join(lines)
+    return "\n".join(lines)
 
 def meta_error(response, operation):
     try:
