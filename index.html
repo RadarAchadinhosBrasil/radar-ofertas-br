@@ -372,7 +372,12 @@ async function buscarFoto(p,i){const holder=document.querySelector('[data-photo=
 function normalizar(s){return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim()}
 function discount(p){const a=Number(p.preco_anterior_brl),b=Number(p.preco_atual_brl);return a>b&&b>0?Math.round((1-b/a)*100):0}
 function safe(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-$('#search').addEventListener('input',render);$('#sort').addEventListener('change',render);$('#year').textContent=new Date().getFullYear();
+$('#search').addEventListener('input',()=>{
+  // Busca digitada é global: não deixa um filtro anterior esconder marcas ou produtos.
+  activeCategory='todas';activeNiche='todos';
+  $('#categoryFilters').querySelectorAll('.category-chip').forEach((b,i)=>{const active=i===0;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active))});
+  atualizarSubcategorias();render();
+});$('#sort').addEventListener('change',render);$('#year').textContent=new Date().getFullYear();
 fetch(CSV_URL,{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('Não foi possível carregar a lista de ofertas');return r.text()}).then(t=>{products=parseCSV(t).filter(p=>p.produto&&p.preco_atual_brl&&p.link_afiliado);render()}).catch(()=>{$('#count').textContent='';$('#products').innerHTML='<div class="empty">Não foi possível carregar as ofertas agora. Volte em alguns instantes.</div>'});
 </script>
 </body></html>
