@@ -265,7 +265,7 @@ function render(){
   else if(term)list.sort((a,b)=>b._score-a._score);
   $('#count').textContent=list.length+' produto(s) encontrado(s)';
   $('#products').innerHTML=list.length?list.map((p,i)=>{
-    const d=discount(p),image=p.imagem_url?'<img loading="lazy" src="'+safe(p.imagem_url)+'" alt="'+safe(p.produto)+'" onerror="this.parentElement.classList.add(\\'image-error\\');this.remove()">':'<div class="photo-loading image-error" data-photo="'+i+'" style="color:#777;font-size:11px;text-align:center;padding:15px">Buscando foto do produto…</div>';
+    const d=discount(p),image=p.imagem_url?'<img loading="lazy" src="'+safe(p.imagem_url)+'" alt="'+safe(p.produto)+'" onerror="this.parentElement.classList.add(\'image-error\');this.remove()">':'<div class="photo-loading image-error" data-photo="'+i+'" style="color:#777;font-size:11px;text-align:center;padding:15px">Buscando foto do produto…</div>';
     return '<article class="product" data-product-category="'+p._category+'"><div class="photo">'+(d>0?'<span class="tag">-'+d+'% OFF</span>':'')+image+'<span class="watermark">RADAR DE OFERTAS BR</span></div><div class="product-info"><div class="product-name">'+safe(p.produto)+'</div>'+(p.preco_anterior_brl?'<div class="old">De '+money(p.preco_anterior_brl)+'</div>':'<div class="old">Preço promocional</div>')+'<div class="price">'+money(p.preco_atual_brl)+'</div><a class="buy" href="'+safe(p.link_afiliado)+'" target="_blank" rel="nofollow sponsored noopener">VER OFERTA NO MERCADO LIVRE ↗</a></div></article>'
   }).join(''):'<div class="empty">Não encontramos produtos nessa busca. Tente o nome do item ou escolha outra categoria.</div>';
   list.forEach((p,i)=>{if(!p.imagem_url)buscarFoto(p,i)});
