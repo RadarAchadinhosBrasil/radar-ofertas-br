@@ -220,11 +220,13 @@ let products=[];
 let activeCategory='todas';
 const CATEGORY_LABELS={calcados:'Calçados',roupas:'Roupas',eletronicos:'Eletrônicos',casa:'Casa',cozinha:'Cozinha',limpeza:'Limpeza',beleza:'Beleza',esporte:'Esporte',ferramentas:'Ferramentas',automotivo:'Automotivo',natal:'Natal',outros:'Outros'};
 const CATEGORY_ALIASES={
-  // Apenas nomes de categorias amplas acionam a categoria inteira.
-  'calcado':'calcados','calcados':'calcados','roupa':'roupas','roupas':'roupas','vestuario':'roupas',
-  'eletronico':'eletronicos','eletronicos':'eletronicos','casa':'casa','limpeza':'limpeza','cozinha':'cozinha',
-  'beleza':'beleza','esporte':'esporte','esportes':'esporte','ferramenta':'ferramentas','ferramentas':'ferramentas',
-  'automotivo':'automotivo','natal':'natal'
+  // Buscas genéricas devem trazer toda a categoria, não só títulos com a palavra digitada.
+  'tenis':'calcados','calcado':'calcados','calcados':'calcados',
+  'roupa':'roupas','roupas':'roupas','vestuario':'roupas','moda':'roupas',
+  'eletronico':'eletronicos','eletronicos':'eletronicos',
+  'casa':'casa','limpeza':'limpeza','produto limpeza':'limpeza','produtos limpeza':'limpeza','produtos de limpeza':'limpeza',
+  'cozinha':'cozinha','beleza':'beleza','esporte':'esporte','esportes':'esporte',
+  'ferramenta':'ferramentas','ferramentas':'ferramentas','automotivo':'automotivo','natal':'natal'
 };
 function categoriaProduto(nome){
   const n=normalizar(nome);
@@ -250,9 +252,14 @@ function palavraConfere(nome,termo){
   return tokens.includes(termo+'s')||tokens.includes(termo+'es');
 }
 function scoreBusca(nome,consulta){
-  const termos=palavrasBusca(consulta);
+  const busca=normalizar(consulta);
+  if(!busca)return 1;
+  // Categorias e sinônimos amplos: "tênis" e "calçados" mostram todos os calçados.
+  const categoria=CATEGORY_ALIASES[busca];
+  if(categoria)return categoriaProduto(nome)===categoria?1:0;
+  // Marca e nome: Nike, adidas, Puma, Philips etc. procuram em todos os títulos.
+  const termos=palavrasBusca(busca);
   if(!termos.length)return 1;
-  if(termos.length===1&&CATEGORY_ALIASES[termos[0]])return categoriaProduto(nome)===CATEGORY_ALIASES[termos[0]]?1:0;
   return termos.every(t=>palavraConfere(nome,t))?termos.length:0;
 }
 function render(){
