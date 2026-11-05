@@ -114,7 +114,7 @@ def caption(p):
 
     lines += [
         f"💰 Por: {current}", "",
-        "🔗 Para acessar esta oferta, toque em @radarachadinhosbrasil e escolha Telegram ou WhatsApp nos links da bio.",
+       "🛍️ Quer conferir esta oferta? Acesse o link da bio e encontre este produto no nosso site.",
         "",
         "⚠️ Preço e disponibilidade podem mudar. Confira no anúncio.",
         "",
