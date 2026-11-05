@@ -71,38 +71,76 @@ jobs:
               writer.writerows(rows)
           print("Catálogo preparado:", len(rows), "produtos;", len(list(images.iterdir())), "imagens locais.")
           PY
-      - name: Gerar imagem de prévia para compartilhamento
+      - name: Gerar banner visual de compartilhamento com produtos da loja
         run: |
           python -m pip install --quiet pillow
           python - <<'PY'
-          from PIL import Image, ImageDraw, ImageFont
+          from PIL import Image, ImageDraw, ImageFont, ImageFilter
           from pathlib import Path
+          import csv, math
 
-          width, height = 1200, 630
-          image = Image.new("RGB", (width, height), (13, 13, 13))
-          draw = ImageDraw.Draw(image)
-          bold = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
-          regular = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
-          title = ImageFont.truetype(bold, 78)
-          subtitle = ImageFont.truetype(bold, 48)
-          small = ImageFont.truetype(regular, 30)
-          yellow, white, gray = (255, 210, 31), (248, 248, 248), (185, 185, 185)
+          W, H = 1200, 630
+          bg = Image.new("RGB", (W, H), (15, 16, 18))
+          d = ImageDraw.Draw(bg)
+          yellow = (255, 210, 31)
+          white = (250, 250, 247)
+          muted = (185, 188, 193)
+          bold_path = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+          reg_path = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
+          def font(size, bold=True):
+              return ImageFont.truetype(bold_path if bold else reg_path, size)
 
-          draw.rounded_rectangle((42, 42, 1158, 588), radius=34, outline=yellow, width=5)
-          draw.rounded_rectangle((84, 92, 210, 218), radius=28, fill=yellow)
-          for radius in (48, 32, 16):
-              draw.ellipse((147-radius, 155-radius, 147+radius, 155+radius), outline=(13, 13, 13), width=5)
-          draw.line((147, 155, 184, 117), fill=(13, 13, 13), width=8)
-          draw.ellipse((176, 109, 192, 125), fill=(13, 13, 13))
-          draw.text((250, 105), "RADAR DE", font=subtitle, fill=white)
-          draw.text((250, 165), "OFERTAS BR", font=title, fill=yellow)
-          draw.line((90, 310, 1110, 310), fill=(70, 70, 70), width=3)
-          draw.text((100, 365), "OFERTAS QUE VALEM", font=subtitle, fill=white)
-          draw.text((100, 425), "A PENA.", font=subtitle, fill=yellow)
-          draw.text((100, 525), "As melhores oportunidades em um só lugar.", font=small, fill=gray)
+          # Fundo com brilho e grafismos discretos, mantendo a identidade da loja.
+          glow = Image.new("RGBA", (W, H), (0,0,0,0))
+          gd = ImageDraw.Draw(glow)
+          gd.ellipse((760,-250,1370,360), fill=(255,210,31,34))
+          gd.ellipse((900,300,1450,850), fill=(255,210,31,18))
+          glow = glow.filter(ImageFilter.GaussianBlur(65))
+          bg = Image.alpha_composite(bg.convert("RGBA"), glow)
+          d = ImageDraw.Draw(bg)
+
+          # Cabeçalho / marca.
+          d.rounded_rectangle((58,54,126,122), radius=18, fill=yellow)
+          # Ícone de radar
+          for r in (25,17,9):
+              d.ellipse((92-r,88-r,92+r,88+r), outline=(20,20,20), width=3)
+          d.line((92,88,112,68), fill=(20,20,20), width=5)
+          d.ellipse((107,63,117,73), fill=(20,20,20))
+          d.text((148,57), "RADAR DE OFERTAS BR", font=font(34), fill=white)
+          d.text((150,101), "ACHADOS • DESCONTOS • OPORTUNIDADES", font=font(14), fill=yellow)
+
+          # Mensagem principal com hierarquia visual.
+          d.text((60,190), "BONS ACHADOS,", font=font(49), fill=white)
+          d.text((60,250), "PREÇOS QUE", font=font(49), fill=white)
+          d.text((60,310), "VALEM A PENA.", font=font(49), fill=yellow)
+          d.rounded_rectangle((62,390,420,397), radius=4, fill=yellow)
+          d.text((62,422), "Ofertas selecionadas para você", font=font(21,False), fill=muted)
+          d.rounded_rectangle((60,492,360,548), radius=14, fill=yellow)
+          d.text((84,507), "GARIMPE AGORA  →", font=font(19), fill=(17,17,17))
+
+          # Colagem de fotos reais do catálogo, baixadas pelo próprio deploy.
+          image_paths = sorted(Path("_site/images").glob("*")) if Path("_site/images").exists() else []
+          cards = [(590,92,850,365),(870,170,1128,443),(650,390,850,565)]
+          for idx, (x1,y1,x2,y2) in enumerate(cards):
+              d.rounded_rectangle((x1,y1,x2,y2), radius=22, fill=(250,250,248), outline=(255,255,255), width=2)
+              if idx < len(image_paths):
+                  try:
+                      product = Image.open(image_paths[idx]).convert("RGB")
+                      product.thumbnail((x2-x1-22,y2-y1-22))
+                      px = x1 + ((x2-x1)-product.width)//2
+                      py = y1 + ((y2-y1)-product.height)//2
+                      bg.alpha_composite(product.convert("RGBA"), (px,py))
+                  except Exception as exc:
+                      print("Não foi possível usar foto", image_paths[idx], exc)
+          # Tarja promocional sobreposta sem cobrir os produtos.
+          d.rounded_rectangle((875,82,1115,132), radius=13, fill=yellow)
+          d.text((899,95), "OFERTAS DO DIA", font=font(17), fill=(18,18,18))
+          # Contorno e rodapé.
+          d.rounded_rectangle((24,24,W-24,H-24), radius=30, outline=(255,210,31,150), width=2)
+          d.text((885,565), "RADAR DE OFERTAS BR", font=font(13), fill=muted)
           Path("_site/social-preview.png").parent.mkdir(parents=True, exist_ok=True)
-          image.save("_site/social-preview.png", format="PNG", optimize=True)
-          print("Imagem social gerada:", Path("_site/social-preview.png").stat().st_size, "bytes")
+          bg.convert("RGB").save("_site/social-preview.png", "PNG", optimize=True)
+          print("Banner social gerado com", min(len(image_paths), len(cards)), "fotos do catálogo.")
           PY
       - name: Configurar Pages
         uses: actions/configure-pages@v5
