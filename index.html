@@ -230,7 +230,7 @@ const CATEGORY_ALIASES={
 };
 function categoriaProduto(nome){
   const n=normalizar(nome);
-  if(/\b(tenis|chinelo|sapato|mocassim|loafer|bota|sandalia|sapatilha)\b/.test(n))return 'calcados';
+  if(/\b(tenis|chinelo|sapato|sapatenis|mocassim|loafer|bota|sandalia|sapatilha)\b/.test(n))return 'calcados';
   if(/\b(calcas?|camisetas?|camisas?|polos?|bermudas?|shorts?|leggings?|cuecas?|calcinhas?|sutias?|blusas?|meias?|cintas?|tops?)\b/.test(n))return 'roupas';
   if(/\b(mop|aspiradores?|extratora|lavadora|desobstruidora|papa bolinha|lixeira)\b/.test(n))return 'limpeza';
   if(/\b(panela|frigideira|pipoqueira|tapioqueira|chaleira|mixer|sanduicheira|grill|talheres|faqueiro|escorredor|tempero|copo termico|pano de prato)\b/.test(n))return 'cozinha';
