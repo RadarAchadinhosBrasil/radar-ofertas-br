@@ -39,6 +39,7 @@
     h2{font:800 27px Manrope,sans-serif;letter-spacing:-.8px;margin:7px 0 0}.sub{color:var(--muted);font-size:13px;margin-top:7px}
     .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px}.search{flex:1;min-width:220px;background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:13px 15px;color:white;font:500 13px "DM Sans";outline:none}.search:focus{border-color:var(--yellow)}
     select{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:0 14px;color:#eee;font:600 12px "DM Sans";min-height:45px}
+    .category-filters{display:flex;gap:8px;flex-wrap:wrap;margin:-6px 0 20px}.category-chip{border:1px solid var(--line);background:var(--panel);color:#dfe1e4;border-radius:999px;padding:9px 14px;font:700 11px "DM Sans";cursor:pointer;transition:.2s}.category-chip:hover,.category-chip.active{background:var(--yellow);border-color:var(--yellow);color:#111}.category-chip:focus-visible{outline:2px solid white;outline-offset:2px}
     .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
     .product{background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden;transition:transform .2s,border-color .2s;display:flex;flex-direction:column;min-width:0}
     .product:hover{transform:translateY(-4px);border-color:#71601b}
@@ -77,7 +78,21 @@
 </div></section>
 <section class="section" id="ofertas"><div class="wrap">
   <div class="section-head"><div><div class="kicker">Garimpe sua próxima compra</div><h2>Ofertas em destaque</h2><div class="sub">Confira os produtos selecionados pelo Radar.</div></div><div class="sub" id="count">110 produto(s)</div></div>
-  <div class="toolbar"><input class="search" id="search" type="search" placeholder="Digite o nome do produto ou uma categoria…" autocomplete="off" aria-label="Buscar produto"><select id="sort" aria-label="Ordenar ofertas"><option value="default">Ordenar: seleção do Radar</option><option value="low">Menor preço</option><option value="discount">Maior desconto</option><option value="az">Nome A–Z</option></select></div>
+  <div class="toolbar"><input class="search" id="search" type="search" placeholder="Buscar produto: tênis, calça, fone, panela…" autocomplete="off" aria-label="Buscar produto"><select id="sort" aria-label="Ordenar ofertas"><option value="default">Ordenar: seleção do Radar</option><option value="low">Menor preço</option><option value="discount">Maior desconto</option><option value="az">Nome A–Z</option></select></div>
+  <nav class="category-filters" id="categoryFilters" aria-label="Filtrar ofertas por categoria">
+    <button class="category-chip active" type="button" data-category="todas" aria-pressed="true">Todas</button>
+    <button class="category-chip" type="button" data-category="calcados" aria-pressed="false">Calçados</button>
+    <button class="category-chip" type="button" data-category="roupas" aria-pressed="false">Roupas</button>
+    <button class="category-chip" type="button" data-category="eletronicos" aria-pressed="false">Eletrônicos</button>
+    <button class="category-chip" type="button" data-category="casa" aria-pressed="false">Casa</button>
+    <button class="category-chip" type="button" data-category="cozinha" aria-pressed="false">Cozinha</button>
+    <button class="category-chip" type="button" data-category="limpeza" aria-pressed="false">Limpeza</button>
+    <button class="category-chip" type="button" data-category="beleza" aria-pressed="false">Beleza</button>
+    <button class="category-chip" type="button" data-category="esporte" aria-pressed="false">Esporte</button>
+    <button class="category-chip" type="button" data-category="ferramentas" aria-pressed="false">Ferramentas</button>
+    <button class="category-chip" type="button" data-category="automotivo" aria-pressed="false">Automotivo</button>
+    <button class="category-chip" type="button" data-category="natal" aria-pressed="false">Natal</button>
+  </nav>
   <div class="grid" id="products"><article class="product"><div class="photo"><span class="tag">-65% OFF</span><img loading="lazy" src="https://http2.mlstatic.com/D_NQ_NP_951617-MLB110943565198_052026-O.webp" alt="Parafusadeira Furadeira 48v Profissional 2 Baterias Sem Fio" onerror="this.remove()"><span class="watermark">RADAR DE OFERTAS BR</span></div><div class="product-info"><div class="product-name">Parafusadeira Furadeira 48v Profissional 2 Baterias Sem Fio</div><div class="old">De R$ 299,90</div><div class="price">R$ 104,31</div><a class="buy" href="https://meli.la/19b9vc7" target="_blank" rel="nofollow sponsored noopener">VER OFERTA NO MERCADO LIVRE ↗</a></div></article>
 <article class="product"><div class="photo"><span class="tag">-38% OFF</span><img loading="lazy" src="https://http2.mlstatic.com/D_NQ_NP_887864-MLB108264754941_032026-O.webp" alt="Perfume Club De Nuit Intense Da Armaf EDT 105ml Masculino" onerror="this.remove()"><span class="watermark">RADAR DE OFERTAS BR</span></div><div class="product-info"><div class="product-name">Perfume Club De Nuit Intense Da Armaf EDT 105ml Masculino</div><div class="old">De R$ 319,00</div><div class="price">R$ 197,72</div><a class="buy" href="https://meli.la/28XGvKf" target="_blank" rel="nofollow sponsored noopener">VER OFERTA NO MERCADO LIVRE ↗</a></div></article>
 <article class="product"><div class="photo"><span class="tag">-34% OFF</span><img loading="lazy" src="https://http2.mlstatic.com/D_NQ_NP_750670-MLA118429558724_102026-O.webp" alt="Philips OneBlade Aparador e Barbeador Elétrico 5 em 1 QP1425/10" onerror="this.remove()"><span class="watermark">RADAR DE OFERTAS BR</span></div><div class="product-info"><div class="product-name">Philips OneBlade Aparador e Barbeador Elétrico 5 em 1 QP1425/10</div><div class="old">De R$ 212,38</div><div class="price">R$ 139,99</div><a class="buy" href="https://meli.la/2dHzWd1" target="_blank" rel="nofollow sponsored noopener">VER OFERTA NO MERCADO LIVRE ↗</a></div></article>
@@ -202,64 +217,65 @@ const $=s=>document.querySelector(s);
 function parseCSV(text){const rows=[];let row=[],field='',quoted=false;for(let i=0;i<text.length;i++){const c=text[i],n=text[i+1];if(quoted){if(c==='"'&&n==='"'){field+='"';i++}else if(c==='"')quoted=false;else field+=c}else if(c==='"')quoted=true;else if(c===','){row.push(field);field=''}else if(c==='\n'){row.push(field);rows.push(row);row=[];field=''}else if(c!=='\r')field+=c}if(field.length||row.length){row.push(field);rows.push(row)}const headers=(rows.shift()||[]).map(x=>x.trim());return rows.filter(r=>r.some(Boolean)).map(r=>Object.fromEntries(headers.map((h,i)=>[h,(r[i]||'').trim()])));}
 function money(v){const n=Number(String(v||'').replace(',','.'));return Number.isFinite(n)&&n>0?n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}):''}
 let products=[];
-const categoriasBusca={
-  'roupa':['roupas'],
-  'roupas':['roupas'],
-  'vestuario':['roupas'],
-  'vestuário':['roupas'],
-  'moda':['roupas','calcados'],
-  'calcado':['calcados'],
-  'calcados':['calcados'],
-  'calçado':['calcados'],
-  'calçados':['calcados'],
-  'limpeza':['limpeza'],
-  'cozinha':['cozinha'],
-  'eletrodomestico':['eletrodomesticos'],
-  'eletrodomesticos':['eletrodomesticos'],
-  'eletronico':['eletronicos'],
-  'eletronicos':['eletronicos'],
-  'beleza':['beleza'],
-  'perfume':['beleza'],
-  'esporte':['esporte'],
-  'esportes':['esporte'],
-  'ferramenta':['ferramentas'],
-  'ferramentas':['ferramentas'],
-  'casa':['casa','cozinha','limpeza','eletrodomesticos'],
-  'natal':['natal'],
-  'iluminacao':['iluminacao']
+let activeCategory='todas';
+const CATEGORY_LABELS={calcados:'Calçados',roupas:'Roupas',eletronicos:'Eletrônicos',casa:'Casa',cozinha:'Cozinha',limpeza:'Limpeza',beleza:'Beleza',esporte:'Esporte',ferramentas:'Ferramentas',automotivo:'Automotivo',natal:'Natal',outros:'Outros'};
+const CATEGORY_ALIASES={
+  'tenis':'calcados','calcado':'calcados','calcados':'calcados','sapato':'calcados','sapatos':'calcados','chinelo':'calcados','chinelos':'calcados','bota':'calcados','botas':'calcados','sandalia':'calcados','sapatilha':'calcados',
+  'roupa':'roupas','roupas':'roupas','vestuario':'roupas','vestuario':'roupas','calca':'roupas','calcas':'roupas','camiseta':'roupas','camisetas':'roupas','camisa':'roupas','camisas':'roupas','bermuda':'roupas','bermudas':'roupas','short':'roupas','shorts':'roupas','legging':'roupas','leggings':'roupas','meia':'roupas','meias':'roupas','cueca':'roupas','cuecas':'roupas','calcinha':'roupas','calcinhas':'roupas','blusa':'roupas','blusas':'roupas','sutia':'roupas','sutias':'roupas','top':'roupas','tops':'roupas',
+  'eletronico':'eletronicos','eletronicos':'eletronicos','fone':'eletronicos','fones':'eletronicos','carregador':'eletronicos','carregadores':'eletronicos','celular':'eletronicos','celulares':'eletronicos','cabo':'eletronicos','cabos':'eletronicos','powerbank':'eletronicos','relogio':'eletronicos','relogios':'eletronicos',
+  'casa':'casa','limpeza':'limpeza','mop':'limpeza','aspirador':'limpeza','aspiradores':'limpeza','cozinha':'cozinha','panela':'cozinha','panelas':'cozinha','frigideira':'cozinha','frigideiras':'cozinha',
+  'beleza':'beleza','perfume':'beleza','perfumes':'beleza','skincare':'beleza','esporte':'esporte','esportes':'esporte','suplemento':'esporte','suplementos':'esporte','creatina':'esporte','whey':'esporte','ferramenta':'ferramentas','ferramentas':'ferramentas','furadeira':'ferramentas','parafusadeira':'ferramentas','automotivo':'automotivo','carro':'automotivo','natal':'natal','iluminacao':'natal'
 };
 function categoriaProduto(nome){
   const n=normalizar(nome);
-  if(/\b(tenis|chinelo|sapato|mocassim|loafer|bota|sandalia|sapatênis)\b/.test(n))return 'calcados';
+  if(/\b(tenis|chinelo|sapato|mocassim|loafer|bota|sandalia|sapatilha)\b/.test(n))return 'calcados';
   if(/\b(calcas?|camisetas?|camisas?|polos?|bermudas?|shorts?|leggings?|cuecas?|calcinhas?|sutias?|blusas?|meias?|cintas?|tops?)\b/.test(n))return 'roupas';
-  if(/\b(mop|aspirador|extratora|lavadora|desobstruidora|papa bolinha|lixeira|limpeza)\b/.test(n))return 'limpeza';
+  if(/\b(mop|aspiradores?|extratora|lavadora|desobstruidora|papa bolinha|lixeira)\b/.test(n))return 'limpeza';
   if(/\b(panela|frigideira|pipoqueira|tapioqueira|chaleira|mixer|sanduicheira|grill|talheres|faqueiro|escorredor|tempero|copo termico|pano de prato)\b/.test(n))return 'cozinha';
-  if(/\b(ventilador|purificador|colchao|travesseiro|cortina|espelho|jogo de cama)\b/.test(n))return 'casa';
+  if(/\b(furadeira|parafusadeira|motosserra|serra)\b/.test(n))return 'ferramentas';
   if(/\b(fone|headphone|headset|carregador|power bank|cabo|extensao|filtro de linha|relogio|celular|iphone|magsafe)\b/.test(n))return 'eletronicos';
   if(/\b(perfume|skincare|barbeador|aparador|oneblade|principia)\b/.test(n))return 'beleza';
-  if(/\b(creatina|whey|proteina|pre treino|fitness|academia)\b/.test(n))return 'esporte';
-  if(/\b(furadeira|parafusadeira|motosserra|serra)\b/.test(n))return 'ferramentas';
+  if(/\b(creatina|whey|proteina|pre treino)\b/.test(n))return 'esporte';
+  if(/\b(automotiva|lavagem automotiva|capa de chuva motoqueiro)\b/.test(n))return 'automotivo';
   if(/\b(natal|arvore de natal|pisca|cascata|led|fios de fada)\b/.test(n))return 'natal';
-  if(/\b(automotiva|lavagem automotiva|capa de chuva)\b/.test(n))return 'automotivo';
+  if(/\b(ventilador|purificador|colchao|travesseiro|cortina|espelho|jogo de cama|capa protetora colchao|bolsa|mochila)\b/.test(n))return 'casa';
   return 'outros';
 }
-function scoreBusca(nome,consulta){
-  const texto=normalizar(nome);
-  const bruto=normalizar(consulta).split(' ').filter(p=>p.length>1&&!['de','da','do','das','dos','para','com','e','em','no','na'].includes(p));
-  if(!bruto.length)return 1;
-  // Consultas genéricas usam a categoria atribuída ao produto.
-  if(bruto.length===1 && categoriasBusca[bruto[0]]){
-    return categoriasBusca[bruto[0]].includes(categoriaProduto(nome))?1:0;
-  }
-  // Consultas específicas procuram palavras inteiras no nome, nunca palavras aproximadas.
-  const palavrasNome=texto.split(' ');
-  const acertos=bruto.every(p=>{
-    const termo=normalizar(p);
-    return palavrasNome.some(palavra=>palavra===termo||palavra===termo+'s'||palavra===termo+'es');
-  });
-  return acertos?bruto.length:0;
+function palavrasBusca(s){return normalizar(s).split(' ').filter(p=>p.length>1&&!['de','da','do','das','dos','para','com','e','em','no','na','um','uma'].includes(p))}
+function palavraConfere(nome,termo){
+  const tokens=normalizar(nome).split(' ');
+  if(tokens.includes(termo))return true;
+  // Flexão simples singular/plural sem aceitar palavras apenas parecidas (ex.: tênis/sapatênis).
+  if(termo.endsWith('s'))return tokens.includes(termo.slice(0,-1));
+  return tokens.includes(termo+'s')||tokens.includes(termo+'es');
 }
-function render(){const term=$('#search').value.trim();const sort=$('#sort').value;let list=products.map(p=>({...p,_score:scoreBusca(p.produto,term)})).filter(p=>p._score>0);if(sort==='low')list.sort((a,b)=>Number(a.preco_atual_brl)-Number(b.preco_atual_brl));else if(sort==='az')list.sort((a,b)=>a.produto.localeCompare(b.produto,'pt-BR'));else if(sort==='discount')list.sort((a,b)=>discount(b)-discount(a));else if(term)list.sort((a,b)=>b._score-a._score);$('#count').textContent=list.length+' produto(s) encontrado(s)';$('#products').innerHTML=list.length?list.map((p,i)=>{const d=discount(p);const image=p.imagem_url?'<img loading="lazy" src="'+safe(p.imagem_url)+'" alt="'+safe(p.produto)+'" onerror="this.parentElement.classList.add(\'image-error\');this.remove()">':'<div class="photo-loading image-error" data-photo="'+i+'" style="color:#777;font-size:11px;text-align:center;padding:15px">Buscando foto do produto…</div>';return '<article class="product"><div class="photo">'+(d>0?'<span class="tag">-'+d+'% OFF</span>':'')+image+'<span class="watermark">RADAR DE OFERTAS BR</span></div><div class="product-info"><div class="product-name">'+safe(p.produto)+'</div>'+(p.preco_anterior_brl?'<div class="old">De '+money(p.preco_anterior_brl)+'</div>':'<div class="old">Preço promocional</div>')+'<div class="price">'+money(p.preco_atual_brl)+'</div><a class="buy" href="'+safe(p.link_afiliado)+'" target="_blank" rel="nofollow sponsored noopener">VER OFERTA NO MERCADO LIVRE ↗</a></div></article>'}).join(''):'<div class="empty">Não encontramos esse termo. Tente uma palavra mais simples, como tênis, fone, panela ou perfume.</div>';list.forEach((p,i)=>{if(!p.imagem_url)buscarFoto(p,i)})}
+function scoreBusca(nome,consulta){
+  const termos=palavrasBusca(consulta);
+  if(!termos.length)return 1;
+  if(termos.length===1&&CATEGORY_ALIASES[termos[0]])return categoriaProduto(nome)===CATEGORY_ALIASES[termos[0]]?1:0;
+  return termos.every(t=>palavraConfere(nome,t))?termos.length:0;
+}
+function render(){
+  const term=$('#search').value.trim(),sort=$('#sort').value;
+  let list=products.map(p=>({...p,_category:categoriaProduto(p.produto),_score:scoreBusca(p.produto,term)}))
+    .filter(p=>p._score>0&&(activeCategory==='todas'||p._category===activeCategory));
+  if(sort==='low')list.sort((a,b)=>Number(a.preco_atual_brl)-Number(b.preco_atual_brl));
+  else if(sort==='az')list.sort((a,b)=>a.produto.localeCompare(b.produto,'pt-BR'));
+  else if(sort==='discount')list.sort((a,b)=>discount(b)-discount(a));
+  else if(term)list.sort((a,b)=>b._score-a._score);
+  $('#count').textContent=list.length+' produto(s) encontrado(s)';
+  $('#products').innerHTML=list.length?list.map((p,i)=>{
+    const d=discount(p),image=p.imagem_url?'<img loading="lazy" src="'+safe(p.imagem_url)+'" alt="'+safe(p.produto)+'" onerror="this.parentElement.classList.add(\\'image-error\\');this.remove()">':'<div class="photo-loading image-error" data-photo="'+i+'" style="color:#777;font-size:11px;text-align:center;padding:15px">Buscando foto do produto…</div>';
+    return '<article class="product" data-product-category="'+p._category+'"><div class="photo">'+(d>0?'<span class="tag">-'+d+'% OFF</span>':'')+image+'<span class="watermark">RADAR DE OFERTAS BR</span></div><div class="product-info"><div class="product-name">'+safe(p.produto)+'</div>'+(p.preco_anterior_brl?'<div class="old">De '+money(p.preco_anterior_brl)+'</div>':'<div class="old">Preço promocional</div>')+'<div class="price">'+money(p.preco_atual_brl)+'</div><a class="buy" href="'+safe(p.link_afiliado)+'" target="_blank" rel="nofollow sponsored noopener">VER OFERTA NO MERCADO LIVRE ↗</a></div></article>'
+  }).join(''):'<div class="empty">Não encontramos produtos nessa busca. Tente o nome do item ou escolha outra categoria.</div>';
+  list.forEach((p,i)=>{if(!p.imagem_url)buscarFoto(p,i)});
+}
+$('#categoryFilters').addEventListener('click',e=>{
+  const btn=e.target.closest('button[data-category]');if(!btn)return;
+  activeCategory=btn.dataset.category;
+  $('#categoryFilters').querySelectorAll('.category-chip').forEach(b=>{const active=b===btn;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active))});
+  render();
+});
 async function buscarFoto(p,i){const holder=document.querySelector('[data-photo="'+i+'"]');if(!holder)return;try{const url='https://api.mercadolibre.com/sites/MLB/search?q='+encodeURIComponent(p.produto)+'&limit=5';const r=await fetch(url);if(!r.ok)throw Error('Busca indisponível');const data=await r.json();const tokens=s=>normalizar(s).split(' ').filter(x=>x.length>2);const wanted=tokens(p.produto);const ranked=(data.results||[]).map(item=>{const got=tokens(item.title||'');const score=wanted.filter(t=>got.includes(t)).length/Math.max(wanted.length,1);return {item,score}}).sort((a,b)=>b.score-a.score);const best=ranked[0];if(!best||best.score<0.35)throw Error('Sem correspondência segura');const src=(best.item.thumbnail||best.item.pictures?.[0]?.url||'').replace(/^http:/,'https:');if(!src)throw Error('Sem foto');const img=document.createElement('img');img.loading='lazy';img.alt=p.produto;img.src=src;img.onerror=()=>{holder.classList.add('image-error');holder.textContent='';};holder.replaceWith(img)}catch(e){holder.textContent='Foto indisponível';holder.style.color='#777';holder.style.fontSize='11px'}}
 function normalizar(s){return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim()}
 function discount(p){const a=Number(p.preco_anterior_brl),b=Number(p.preco_atual_brl);return a>b&&b>0?Math.round((1-b/a)*100):0}
