@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#111111">
+  <meta name="description" content="Radar de Ofertas BR: achadinhos, descontos e ofertas selecionadas. Confira preços e compre com segurança no Mercado Livre.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Radar de Ofertas BR | Ofertas que valem a pena">
+  <meta property="og:description" content="As melhores oportunidades reunidas em um só lugar. Veja as ofertas do dia.">
+  <meta property="og:url" content="https://radarachadinhosbrasil.github.io/radar-ofertas-br/">
+  <title>Radar de Ofertas BR | Ofertas que valem a pena</title>
+  <link rel="preconnect" href="https://http2.mlstatic.com">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#0b0c0e;--panel:#15171a;--panel2:#1c1f23;--text:#f7f7f5;--muted:#a6abb2;--yellow:#ffd21f;--line:#292d32;--green:#21c779}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:"DM Sans",sans-serif}
+    a{color:inherit;text-decoration:none}.wrap{width:min(1160px,calc(100% - 36px));margin:auto}
+    .topline{height:4px;background:linear-gradient(90deg,#ffd21f,#ffed8a,#ffd21f)}
+    header{position:sticky;top:0;z-index:10;background:rgba(11,12,14,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+    .nav{height:76px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .brand{display:flex;align-items:center;gap:12px;font-family:Manrope,sans-serif;font-weight:800;letter-spacing:-.6px}
+    .brandmark{width:43px;height:43px;border-radius:13px;background:var(--yellow);color:#111;display:grid;place-items:center;font-size:22px;box-shadow:0 5px 22px #ffd21f30}
+    .brand small{display:block;color:var(--muted);font:600 10px "DM Sans";letter-spacing:2px;margin-top:2px}
+    .navlinks{display:flex;align-items:center;gap:25px;color:#d7d9dc;font-size:13px;font-weight:700}
+    .navlinks a:hover{color:var(--yellow)}.navcta{background:var(--yellow);color:#111;padding:11px 16px;border-radius:10px;font-weight:800}
+    .hero{padding:66px 0 48px;background:radial-gradient(ellipse at 80% 20%,#5d4b092b,transparent 42%),linear-gradient(180deg,#141518 0%,var(--bg) 100%);border-bottom:1px solid var(--line)}
+    .eyebrow{display:inline-flex;align-items:center;gap:8px;color:var(--yellow);font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase}
+    .eyebrow:before{content:"";width:22px;height:2px;background:var(--yellow)}
+    h1{font:800 clamp(36px,6vw,64px)/1.04 Manrope,sans-serif;letter-spacing:-2.8px;max-width:760px;margin:18px 0}
+    h1 span{color:var(--yellow)}.hero p{max-width:570px;color:#b7bbc1;font-size:16px;line-height:1.7;margin:0}
+    .hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:27px}.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:14px 19px;border-radius:11px;font-weight:800;font-size:13px;transition:.2s}
+    .btn-primary{background:var(--yellow);color:#111}.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 25px #ffd21f30}.btn-ghost{border:1px solid #41464d;color:#fff}.btn-ghost:hover{border-color:var(--yellow)}
+    .trust{display:flex;gap:22px;flex-wrap:wrap;margin-top:30px;color:#aeb3ba;font-size:12px}.trust span{display:flex;align-items:center;gap:7px}.trust b{color:var(--green)}
+    .section{padding:48px 0}.section-head{display:flex;align-items:end;justify-content:space-between;gap:18px;margin-bottom:23px}
+    .kicker{color:var(--yellow);font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase}
+    h2{font:800 27px Manrope,sans-serif;letter-spacing:-.8px;margin:7px 0 0}.sub{color:var(--muted);font-size:13px;margin-top:7px}
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px}.search{flex:1;min-width:220px;background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:13px 15px;color:white;font:500 13px "DM Sans";outline:none}.search:focus{border-color:var(--yellow)}
+    select{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:0 14px;color:#eee;font:600 12px "DM Sans";min-height:45px}
+    .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+    .product{background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden;transition:transform .2s,border-color .2s;display:flex;flex-direction:column;min-width:0}
+    .product:hover{transform:translateY(-4px);border-color:#71601b}
+    .photo{height:205px;background:#fff;position:relative;display:grid;place-items:center;overflow:hidden}
+    .photo img{width:100%;height:100%;object-fit:contain;padding:12px;transition:transform .3s}.product:hover .photo img{transform:scale(1.04)}
+    .watermark{position:absolute;left:10px;bottom:10px;color:#fff;background:#111b;padding:6px 8px;border:1px solid #ffffff30;border-radius:6px;font:800 8px Manrope,sans-serif;letter-spacing:1px;text-shadow:0 1px 3px #000;pointer-events:none}
+    .tag{position:absolute;top:10px;left:10px;background:var(--yellow);color:#111;border-radius:6px;padding:6px 8px;font-size:10px;font-weight:900}
+    .product-info{padding:14px;display:flex;flex-direction:column;flex:1}.product-name{font-size:13px;font-weight:700;line-height:1.45;min-height:38px}
+    .old{font-size:11px;color:#92979e;text-decoration:line-through;margin-top:12px}.price{font:800 23px Manrope,sans-serif;color:var(--yellow);margin-top:2px;letter-spacing:-.6px}
+    .buy{margin-top:14px;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--yellow);color:#111;padding:12px;border-radius:9px;font-size:12px;font-weight:900}.buy:hover{background:#ffe36a}
+    .empty,.loading{grid-column:1/-1;padding:35px;text-align:center;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:14px}
+    .about{background:linear-gradient(120deg,#17191c,#111214);border-block:1px solid var(--line)}.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:35px;align-items:center}
+    .about-card{padding:24px;background:#1d2024;border:1px solid #30343a;border-radius:16px}.about-card strong{font:800 18px Manrope;color:var(--yellow)}.about-card p{color:#b6bbc1;font-size:13px;line-height:1.7}
+    .socials{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.socials a{border:1px solid #3a3e44;border-radius:9px;padding:10px 13px;font-size:12px;font-weight:700}.socials a:hover{border-color:var(--yellow);color:var(--yellow)}
+    footer{padding:30px 0;color:#8f949b;font-size:11px;line-height:1.7}.foot{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:22px}
+    .notice{color:#7e858d;font-size:10px;max-width:720px;margin-top:14px}
+    @media(max-width:950px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}.photo{height:190px}}
+    @media(max-width:680px){.wrap{width:min(100% - 26px,1160px)}.nav{height:66px}.navlinks a:not(.navcta){display:none}.brand{font-size:13px}.brandmark{width:38px;height:38px}.hero{padding:48px 0 38px}h1{letter-spacing:-1.7px}.hero p{font-size:14px}.section{padding:37px 0}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.photo{height:155px}.product-info{padding:11px}.product-name{font-size:11px}.price{font-size:19px}.buy{padding:11px 7px;font-size:10px}.old{font-size:10px}.about-grid{grid-template-columns:1fr}.section-head{align-items:start;flex-direction:column}}
+    @media(max-width:360px){.grid{grid-template-columns:1fr 1fr}.photo{height:135px}}
+  </style>
+</head>
+<body>
+<div class="topline"></div>
+<header><div class="wrap nav">
+  <a class="brand" href="#" aria-label="Radar de Ofertas BR - início"><span class="brandmark">⌁</span><span>RADAR DE OFERTAS BR<small>ACHADOS • DESCONTOS • OPORTUNIDADES</small></span></a>
+  <nav class="navlinks"><a href="#ofertas">Ofertas</a><a href="#sobre">Sobre nós</a><a class="navcta" href="https://t.me/radardeofertasbr_oficial" target="_blank" rel="noopener">Entrar no Telegram ↗</a></nav>
+</div></header>
+<main>
+<section class="hero"><div class="wrap">
+  <div class="eyebrow">Seu radar de boas oportunidades</div>
+  <h1>Preço bom não passa <span>despercebido.</span></h1>
+  <p>Garimpamos ofertas e achadinhos para você encontrar produtos interessantes, comparar preços e aproveitar boas oportunidades no Mercado Livre.</p>
+  <div class="hero-actions"><a class="btn btn-primary" href="#ofertas">⚡ Ver ofertas disponíveis</a><a class="btn btn-ghost" href="https://t.me/radardeofertasbr_oficial" target="_blank" rel="noopener">✈ Acompanhar no Telegram</a></div>
+  <div class="trust"><span><b>✓</b> Links diretos para os anúncios</span><span><b>✓</b> Ofertas atualizadas pela nossa seleção</span><span><b>✓</b> Acesso gratuito</span></div>
+</div></section>
+<section class="section" id="ofertas"><div class="wrap">
+  <div class="section-head"><div><div class="kicker">Garimpe sua próxima compra</div><h2>Ofertas em destaque</h2><div class="sub">Confira os produtos selecionados pelo Radar.</div></div><div class="sub" id="count">Carregando ofertas…</div></div>
+  <div class="toolbar"><input class="search" id="search" type="search" placeholder="Buscar produto…" aria-label="Buscar produto"><select id="sort" aria-label="Ordenar ofertas"><option value="default">Ordenar: seleção do Radar</option><option value="low">Menor preço</option><option value="discount">Maior desconto</option><option value="az">Nome A–Z</option></select></div>
+  <div class="grid" id="products"><div class="loading">Carregando ofertas…</div></div>
+  <p class="notice">Os preços e a disponibilidade podem mudar a qualquer momento. Confira sempre as condições e informações diretamente no anúncio do vendedor.</p>
+</div></section>
+<section class="section about" id="sobre"><div class="wrap about-grid">
+  <div><div class="kicker">Quem somos</div><h2>Seu atalho para bons achados.</h2><p class="sub" style="line-height:1.8">O Radar de Ofertas BR reúne produtos e oportunidades em diferentes categorias para facilitar sua busca por bons preços. Nosso objetivo é ajudar você a descobrir ofertas sem perder tempo.</p><div class="socials"><a href="https://t.me/radardeofertasbr_oficial" target="_blank" rel="noopener">Telegram ↗</a><a href="https://www.instagram.com/radarchadinhosbrasil/" target="_blank" rel="noopener">Instagram ↗</a></div></div>
+  <div class="about-card"><strong>Transparência sempre.</strong><p>Alguns links desta página são links de afiliado. Isso significa que podemos receber uma comissão se você realizar uma compra por meio deles, sem custo adicional para você. As ofertas levam aos anúncios dos vendedores no Mercado Livre; confira detalhes, avaliações, frete e condições antes de comprar.</p></div>
+</div></section>
+</main>
+<footer><div class="wrap"><div class="foot"><div><strong style="color:#f4f4f1">RADAR DE OFERTAS BR</strong><br>Achados inteligentes. Compras conscientes.</div><div>© <span id="year"></span> Radar de Ofertas BR. Todos os direitos reservados.</div></div><p class="notice">O Radar de Ofertas BR é um canal independente de divulgação de ofertas e não é o Mercado Livre. Marcas e nomes de produtos pertencem aos seus respectivos proprietários. Preços e disponibilidade podem sofrer alterações.</p></div></footer>
+<script>
+const CSV_URL='https://raw.githubusercontent.com/RadarAchadinhosBrasil/radar-ofertas-br/main/produtos.csv';
+const $=s=>document.querySelector(s);
+function parseCSV(text){const rows=[];let row=[],field='',quoted=false;for(let i=0;i<text.length;i++){const c=text[i],n=text[i+1];if(quoted){if(c==='"'&&n==='"'){field+='"';i++}else if(c==='"')quoted=false;else field+=c}else if(c==='"')quoted=true;else if(c===','){row.push(field);field=''}else if(c==='\n'){row.push(field);rows.push(row);row=[];field=''}else if(c!=='\r')field+=c}if(field.length||row.length){row.push(field);rows.push(row)}const headers=(rows.shift()||[]).map(x=>x.trim());return rows.filter(r=>r.some(Boolean)).map(r=>Object.fromEntries(headers.map((h,i)=>[h,(r[i]||'').trim()])));}
+function money(v){const n=Number(String(v||'').replace(',','.'));return Number.isFinite(n)&&n>0?n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}):''}
+let products=[];
+function render(){const term=$('#search').value.trim().toLocaleLowerCase('pt-BR');const sort=$('#sort').value;let list=products.filter(p=>(p.produto||'').toLocaleLowerCase('pt-BR').includes(term));if(sort==='low')list.sort((a,b)=>Number(a.preco_atual_brl)-Number(b.preco_atual_brl));if(sort==='az')list.sort((a,b)=>a.produto.localeCompare(b.produto,'pt-BR'));if(sort==='discount')list.sort((a,b)=>discount(b)-discount(a));$('#count').textContent=list.length+' produto(s)';$('#products').innerHTML=list.length?list.map(p=>{const d=discount(p);return '<article class="product"><div class="photo">'+(d>0?'<span class="tag">-'+d+'% OFF</span>':'')+'<img loading="lazy" src="'+safe(p.imagem_url)+'" alt="'+safe(p.produto)+'" onerror="this.style.display=\'none\'"><span class="watermark">RADAR DE OFERTAS BR</span></div><div class="product-info"><div class="product-name">'+safe(p.produto)+'</div>'+(p.preco_anterior_brl?'<div class="old">De '+money(p.preco_anterior_brl)+'</div>':'<div class="old">Preço promocional</div>')+'<div class="price">'+money(p.preco_atual_brl)+'</div><a class="buy" href="'+safe(p.link_afiliado)+'" target="_blank" rel="nofollow sponsored noopener">VER OFERTA NO MERCADO LIVRE ↗</a></div></article>'}).join(''):'<div class="empty">Nenhum produto encontrado. Tente outra busca.</div>'}
+function discount(p){const a=Number(p.preco_anterior_brl),b=Number(p.preco_atual_brl);return a>b&&b>0?Math.round((1-b/a)*100):0}
+function safe(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+$('#search').addEventListener('input',render);$('#sort').addEventListener('change',render);$('#year').textContent=new Date().getFullYear();
+fetch(CSV_URL,{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('Não foi possível carregar a lista de ofertas');return r.text()}).then(t=>{products=parseCSV(t).filter(p=>p.produto&&p.preco_atual_brl&&p.link_afiliado);render()}).catch(()=>{$('#count').textContent='';$('#products').innerHTML='<div class="empty">Não foi possível carregar as ofertas agora. Volte em alguns instantes.</div>'});
+</script>
+</body></html>
