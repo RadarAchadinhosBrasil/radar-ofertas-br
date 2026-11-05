@@ -203,84 +203,41 @@ function parseCSV(text){const rows=[];let row=[],field='',quoted=false;for(let i
 function money(v){const n=Number(String(v||'').replace(',','.'));return Number.isFinite(n)&&n>0?n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}):''}
 let products=[];
 const sinonimosBusca={
-  // Cozinha
-  panela:['panela','panelas','pipoqueira','tapioqueira'],frigideira:['frigideira','panelas','panela'],
-  pressao:['pressao','panela de pressao'],pipoqueira:['pipoqueira','panela pipoca'],
-  pipoca:['pipoqueira','panela pipoca'],tapioca:['tapioqueira','tapioca'],
-  chaleira:['chaleira'],sanduicheira:['sanduicheira','grill'],grill:['grill','sanduicheira'],
-  mixer:['mixer','liquidificador'],liquidificador:['liquidificador','mixer'],
-  talher:['talher','talheres','faqueiro'],talheres:['talheres','talher','faqueiro'],
-  faqueiro:['faqueiro','talheres'],escorredor:['escorredor','escorredor de louca'],
-  tempero:['tempero','porta temperos'],temperos:['temperos','porta temperos'],
-  copo:['copo','copo termico'],garrafa:['copo termico','garrafa termica'],
-  pano:['pano de prato','pano'],prato:['pano de prato','prato'],
-  // Casa e limpeza
-  aspirador:['aspirador','extratora','lavadora'],extratora:['extratora','aspirador','limpeza'],
-  lavadora:['lavadora','lavadora de alta pressao','desobstruidora'],
-  mop:['mop','esfregao','limpeza'],esfregao:['mop','esfregao'],
-  limpeza:['mop','aspirador','extratora','lavadora','papa bolinha'],
-  lixeira:['lixeira','lixo'],espelho:['espelho'],cortina:['cortina','blackout'],
-  blackout:['blackout','cortina'],colchao:['colchao','inflavel'],
-  cama:['jogo de cama','colchao','travesseiro','capa protetora colchao'],
-  travesseiro:['travesseiro','travesseiros'],almofada:['travesseiro','almofada'],
-  papa:['papa bolinha','removedor de fiapos'],fiapos:['papa bolinha','removedor de fiapos'],
-  // Roupas e calçados
+  tenis:['tenis','sapatênis'],
+  calcado:['tenis','sapato','mocassim','loafer','chinelo','sandalia','bota'],
+  fone:['fone','headphone','headset','auricular'],
+  headphone:['headphone','fone'],
+  headset:['headset','fone'],
   roupa:['camiseta','camisa','polo','calca','bermuda','short','blusa','legging','cueca','calcinha','sutia'],
-  camiseta:['camiseta','camisetas'],camisa:['camisa','camiseta','polo'],
-  polo:['polo','camisa polo'],hering:['hering','polo'],
-  calca:['calca','jeans','legging','jogger'],jeans:['jeans','calca jeans'],
-  bermuda:['bermuda','shorts'],short:['short','bermuda','shorts'],
-  shorts:['shorts','short','bermuda'],legging:['legging','calca fitness'],
-  academia:['fitness','academia','legging','bermuda','tenis'],
-  fitness:['fitness','academia','legging','top','bermuda'],
-  top:['top','sutia','fitness'],sutia:['sutia','top'],sutiã:['sutia','top'],
-  cueca:['cueca','boxer'],boxer:['boxer','cueca'],calcinha:['calcinha'],
-  blusa:['blusa','camiseta'],meia:['meia','meias'],meias:['meias','meia'],
-  tenis:['tenis','calcado'],tênis:['tenis','calcado'],sapato:['sapato','mocassim','loafer'],
-  mocassim:['mocassim','loafer','sapato'],loafer:['loafer','mocassim','sapato'],
-  chinelo:['chinelo','slide','havaianas'],havaianas:['havaianas','chinelo'],
-  bota:['bota','galocha'],galocha:['galocha','bota'],bolsa:['bolsa'],
-  mochila:['mochila','bolsa','viagem'],viagem:['mochila','colchao inflavel'],
-  capa:['capa','capa protetora','capa magnetica'],chuva:['capa de chuva','impermeavel'],
-  // Eletrônicos e acessórios
-  celular:['celular','smartphone','iphone'],iphone:['iphone','celular'],
-  carregador:['carregador','fonte usb'],fonte:['fonte usb','carregador'],
-  cabo:['cabo','cabo carregador'],power:['power bank','carregador portatil'],
-  bateria:['power bank','bateria'],fone:['fone','fone de ouvido','headphone','headset'],
-  headphone:['headphone','fone'],headset:['headset','fone'],
-  bluetooth:['bluetooth','fone'],relogio:['relogio','relógio'],
-  relógio:['relogio','relogios'],tomada:['tomada','extensao','filtro de linha'],
-  extensao:['extensao','filtro de linha','regua'],regua:['regua','filtro de linha','extensao'],
-  // Beleza e cuidados
-  perfume:['perfume','colonia'],barbeador:['barbeador','aparador','oneblade'],
-  aparador:['aparador','barbeador','oneblade'],oneblade:['oneblade','barbeador'],
-  skincare:['skincare','protetor solar','principia'],protetor:['protetor solar','skincare'],
-  // Saúde e esporte
-  creatina:['creatina'],whey:['whey','proteina'],proteina:['proteina','whey'],
-  suplemento:['creatina','whey','pre treino'],suplemento:['creatina','whey','pre treino'],
-  treino:['pre treino','creatina','whey','fitness'],pre:['pre treino'],
-  // Ferramentas, carro e moto
-  furadeira:['furadeira','parafusadeira'],parafusadeira:['parafusadeira','furadeira'],
-  motosserra:['motosserra','serra'],serra:['serra','motosserra'],
-  carro:['lavagem automotiva','kit lavagem automotiva'],automotivo:['automotiva','lavagem automotiva'],
-  lavagem:['lavagem automotiva','kit lavagem'],moto:['capa de chuva','motoboy','bota'],
-  motoboy:['motoboy','capa de chuva','galocha'],
-  // Iluminação, Natal e ventilação
+  panela:['panela','frigideira','pipoqueira','tapioqueira'],
+  limpeza:['mop','aspirador','extratora','lavadora','esfregao'],
+  aspirador:['aspirador'],
+  extratora:['extratora'],
+  lavadora:['lavadora'],
+  mop:['mop'],
+  celular:['celular','smartphone','iphone'],
+  carregador:['carregador','fonte usb','cabo carregador'],
+  perfume:['perfume','colonia'],
+  academia:['creatina','whey','pre treino','fitness'],
   natal:['natal','arvore de natal','pisca pisca','enfeite natalino'],
-  arvore:['arvore de natal'],pisca:['pisca pisca','cascata led','fios de fada'],
-  luz:['led','luz','pisca pisca','cascata'],led:['led','pisca pisca','cascata'],
-  ventilador:['ventilador','circulador de ar'],ventilacao:['ventilador','circulador de ar']
-};;
+  ventilador:['ventilador','circulador de ar'],
+  panelao:['panela','panelas']
+};
 function scoreBusca(nome,consulta){
-  const texto=normalizar(nome), palavras=normalizar(consulta).split(' ').filter(p=>p.length>1&&!['de','da','do','das','dos','para','com','e'].includes(p));
+  const texto=normalizar(nome);
+  const palavras=normalizar(consulta).split(' ').filter(p=>p.length>1&&!['de','da','do','das','dos','para','com','e','em','no','na'].includes(p));
   if(!palavras.length)return 1;
-  let pontos=0;
-  palavras.forEach(p=>{
+  const temTermo=(termo)=>{
+    const alvo=normalizar(termo);
+    return (' '+texto+' ').includes(' '+alvo+' ');
+  };
+  const acertos=palavras.map(p=>{
     const alternativas=sinonimosBusca[p]||[p];
-    if(alternativas.some(termo=>{const alvo=normalizar(termo);return texto.includes(alvo)||texto.split(' ').some(palavra=>palavra.startsWith(alvo)||alvo.startsWith(palavra));}))pontos++;
+    return alternativas.some(temTermo);
   });
-  const minimo=palavras.length===1?1:Math.ceil(palavras.length*0.5);
-  return pontos>=minimo?(pontos/palavras.length):0;
+  // Todos os termos digitados precisam combinar; evita misturar categorias sem relação.
+  if(!acertos.every(Boolean))return 0;
+  return acertos.length;
 }
 function render(){const term=$('#search').value.trim();const sort=$('#sort').value;let list=products.map(p=>({...p,_score:scoreBusca(p.produto,term)})).filter(p=>p._score>0);if(sort==='low')list.sort((a,b)=>Number(a.preco_atual_brl)-Number(b.preco_atual_brl));else if(sort==='az')list.sort((a,b)=>a.produto.localeCompare(b.produto,'pt-BR'));else if(sort==='discount')list.sort((a,b)=>discount(b)-discount(a));else if(term)list.sort((a,b)=>b._score-a._score);$('#count').textContent=list.length+' produto(s) encontrado(s)';$('#products').innerHTML=list.length?list.map((p,i)=>{const d=discount(p);const image=p.imagem_url?'<img loading="lazy" src="'+safe(p.imagem_url)+'" alt="'+safe(p.produto)+'" onerror="this.parentElement.classList.add(\'image-error\');this.remove()">':'<div class="photo-loading image-error" data-photo="'+i+'" style="color:#777;font-size:11px;text-align:center;padding:15px">Buscando foto do produto…</div>';return '<article class="product"><div class="photo">'+(d>0?'<span class="tag">-'+d+'% OFF</span>':'')+image+'<span class="watermark">RADAR DE OFERTAS BR</span></div><div class="product-info"><div class="product-name">'+safe(p.produto)+'</div>'+(p.preco_anterior_brl?'<div class="old">De '+money(p.preco_anterior_brl)+'</div>':'<div class="old">Preço promocional</div>')+'<div class="price">'+money(p.preco_atual_brl)+'</div><a class="buy" href="'+safe(p.link_afiliado)+'" target="_blank" rel="nofollow sponsored noopener">VER OFERTA NO MERCADO LIVRE ↗</a></div></article>'}).join(''):'<div class="empty">Não encontramos esse termo. Tente uma palavra mais simples, como tênis, fone, panela ou perfume.</div>';list.forEach((p,i)=>{if(!p.imagem_url)buscarFoto(p,i)})}
 async function buscarFoto(p,i){const holder=document.querySelector('[data-photo="'+i+'"]');if(!holder)return;try{const url='https://api.mercadolibre.com/sites/MLB/search?q='+encodeURIComponent(p.produto)+'&limit=5';const r=await fetch(url);if(!r.ok)throw Error('Busca indisponível');const data=await r.json();const tokens=s=>normalizar(s).split(' ').filter(x=>x.length>2);const wanted=tokens(p.produto);const ranked=(data.results||[]).map(item=>{const got=tokens(item.title||'');const score=wanted.filter(t=>got.includes(t)).length/Math.max(wanted.length,1);return {item,score}}).sort((a,b)=>b.score-a.score);const best=ranked[0];if(!best||best.score<0.35)throw Error('Sem correspondência segura');const src=(best.item.thumbnail||best.item.pictures?.[0]?.url||'').replace(/^http:/,'https:');if(!src)throw Error('Sem foto');const img=document.createElement('img');img.loading='lazy';img.alt=p.produto;img.src=src;img.onerror=()=>{holder.classList.add('image-error');holder.textContent='';};holder.replaceWith(img)}catch(e){holder.textContent='Foto indisponível';holder.style.color='#777';holder.style.fontSize='11px'}}
