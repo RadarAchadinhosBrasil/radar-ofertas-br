@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "painel/**"
+      - "index.html"
       - "produtos.csv"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
