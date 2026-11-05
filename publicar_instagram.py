@@ -73,6 +73,8 @@ def hashtags(p):
          ("#LimpezaDaCasa", "#CasaOrganizada")),
         (("creatina", "whey", "halter", "academia", "fitness"),
          ("#VidaFitness", "#Treino")),
+        (("skincare", "pele", "protetor solar", "hidratante", "serum", "sérum", "creme facial", "limpeza facial", "principia", "maquiagem", "cosmetico", "cosmético"),
+         ("#Skincare", "#CuidadosComAPele")),
         (("toalha", "lixeira", "organizador", "tapete", "cortina"),
          ("#CasaEDecoracao", "#UtilidadesParaCasa")),
     ]
