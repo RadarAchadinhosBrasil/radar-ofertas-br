@@ -39,7 +39,7 @@
     h2{font:800 27px Manrope,sans-serif;letter-spacing:-.8px;margin:7px 0 0}.sub{color:var(--muted);font-size:13px;margin-top:7px}
     .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px}.search{flex:1;min-width:220px;background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:13px 15px;color:white;font:500 13px "DM Sans";outline:none}.search:focus{border-color:var(--yellow)}
     select{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:0 14px;color:#eee;font:600 12px "DM Sans";min-height:45px}
-    .category-filters{display:flex;gap:8px;flex-wrap:wrap;margin:-6px 0 20px}.category-chip{border:1px solid var(--line);background:var(--panel);color:#dfe1e4;border-radius:999px;padding:9px 14px;font:700 11px "DM Sans";cursor:pointer;transition:.2s}.category-chip:hover,.category-chip.active{background:var(--yellow);border-color:var(--yellow);color:#111}.category-chip:focus-visible{outline:2px solid white;outline-offset:2px}
+    .category-filters[hidden]{display:none}.subcategory-filters{margin-top:-10px;margin-bottom:22px}.category-filters{display:flex;gap:8px;flex-wrap:wrap;margin:-6px 0 20px}.category-chip{border:1px solid var(--line);background:var(--panel);color:#dfe1e4;border-radius:999px;padding:9px 14px;font:700 11px "DM Sans";cursor:pointer;transition:.2s}.category-chip:hover,.category-chip.active{background:var(--yellow);border-color:var(--yellow);color:#111}.category-chip:focus-visible{outline:2px solid white;outline-offset:2px}
     .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
     .product{background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden;transition:transform .2s,border-color .2s;display:flex;flex-direction:column;min-width:0}
     .product:hover{transform:translateY(-4px);border-color:#71601b}
@@ -233,22 +233,22 @@ const NICHE_LABELS={
   audio:'Fones e áudio',carregadores:'Carregadores e cabos',energia:'Power banks e energia',relogios:'Relógios',acessorios_celular:'Acessórios para celular',
   cama:'Cama e colchões',decoracao:'Decoração',ventilacao:'Ventiladores',utilidades_casa:'Utilidades para casa',
   panelas:'Panelas',eletroportateis:'Eletroportáteis',utensilios:'Utensílios de cozinha',
-  aspiradores:'Aspiradores',lavadoras:'Lavadoras',mops:'Mops e acessórios de limpeza',
+  aspiradores:'Aspiradores',lavadoras:'Lavadoras',mop:'Mops',lixeiras:'Lixeiras',removedores_fiapos:'Removedores de fiapos',
   perfumes:'Perfumes',skincare:'Skincare',cuidados_pessoais:'Cuidados pessoais',
   suplementos:'Suplementos',calcados_esportivos:'Tênis esportivos',ferramentas:'Ferramentas',automotivo:'Acessórios automotivos',natal:'Decoração de Natal'
 };
 function categoriaProduto(nome){
   const n=normalizar(nome);
   if(/\b(tenis|chinelo|sapato|sapatenis|mocassim|loafer|bota|sandalia|sapatilha)\b/.test(n))return 'calcados';
-  if(/\b(calcas?|camisetas?|camisas?|polos?|bermudas?|shorts?|leggings?|cuecas?|calcinhas?|sutias?|blusas?|meias?|cintas?|tops?)\b/.test(n))return 'roupas';
-  if(/\b(mop|aspiradores?|extratora|lavadora|desobstruidora|papa bolinha|lixeira)\b/.test(n))return 'limpeza';
+  if(/\b(calcas?|camisetas?|camisas?|polos?|bermudas?|shorts?|leggings?|cuecas?|calcinhas?|sutias?|blusas?|meias?|cintas?|tops?|bolsas?|mochilas?)\b/.test(n))return 'roupas';
+  if(/\b(mop|aspirador(?:es)?|extratora|lavadora|desobstruidora|papa bolinha|lixeira)\b/.test(n))return 'limpeza';
   if(/\b(panela|frigideira|pipoqueira|tapioqueira|chaleira|mixer|sanduicheira|grill|talheres|faqueiro|escorredor|tempero|copo termico|pano de prato)\b/.test(n))return 'cozinha';
   if(/\b(furadeira|parafusadeira|motosserra|serra)\b/.test(n))return 'ferramentas';
   if(/\b(fone|headphone|headset|carregador|power bank|cabo|extensao|filtro de linha|relogio|celular|iphone|magsafe)\b/.test(n))return 'eletronicos';
   if(/\b(perfume|skincare|barbeador|aparador|oneblade|principia)\b/.test(n))return 'beleza';
   if(/\b(creatina|whey|proteina|pre treino)\b/.test(n))return 'esporte';
   if(/\b(automotiva|lavagem automotiva|capa de chuva motoqueiro)\b/.test(n))return 'automotivo';
-  if(/\b(natal|arvore de natal|pisca|cascata|led|fios de fada)\b/.test(n))return 'natal';
+  if(/\b(natal|arvore de natal|pisca|cascata|fios de fada)\b/.test(n))return 'natal';
   if(/\b(ventilador|purificador|colchao|travesseiro|cortina|espelho|jogo de cama|capa protetora colchao|bolsa|mochila)\b/.test(n))return 'casa';
   return 'outros';
 }
@@ -276,9 +276,11 @@ function nichoProduto(nome){
   if(/\b(panela|frigideira)\b/.test(n))return 'panelas';
   if(/\b(mixer|sanduicheira|chaleira)\b/.test(n))return 'eletroportateis';
   if(/\b(pipoqueira|tapioqueira|porta temperos|escorredor|faqueiro|talheres|copo termico|pano de prato)\b/.test(n))return 'utensilios';
-  if(/\b(aspirador|extratora)\b/.test(n))return 'aspiradores';
+  if(/\b(aspirador(?:es)?|extratora)\b/.test(n))return 'aspiradores';
   if(/\b(lavadora|desobstruidora)\b/.test(n))return 'lavadoras';
-  if(/\b(mop|lixeira|papa bolinha)\b/.test(n))return 'mops';
+  if(/\b(mop)\b/.test(n))return 'mop';
+  if(/\b(lixeira)\b/.test(n))return 'lixeiras';
+  if(/\b(papa bolinha)\b/.test(n))return 'removedores_fiapos';
   if(/\b(perfume)\b/.test(n))return 'perfumes';
   if(/\b(skincare|principia)\b/.test(n))return 'skincare';
   if(/\b(barbeador|aparador|oneblade)\b/.test(n))return 'cuidados_pessoais';
@@ -286,7 +288,7 @@ function nichoProduto(nome){
   if(/\b(furadeira|parafusadeira|motosserra|serra)\b/.test(n))return 'ferramentas';
   if(/\b(automotiva|lavagem automotiva|motoqueiro)\b/.test(n))return 'automotivo';
   if(/\b(natal|arvore de natal|pisca|cascata|led|fios de fada)\b/.test(n))return 'natal';
-  if(/\b(tenis)\b/.test(n)&&/\b(corrida|caminhada|academia)\b/.test(n))return 'calcados_esportivos';
+  
   return 'outros';
 }
 const NICHE_ALIASES={
@@ -307,7 +309,7 @@ const NICHE_ALIASES={
   mixer:'eletroportateis',sanduicheira:'eletroportateis',chaleira:'eletroportateis',
   utensilio:'utensilios',utensilios:'utensilios',faqueiro:'utensilios',
   aspirador:'aspiradores',aspiradores:'aspiradores',extratora:'aspiradores',
-  lavadora:'lavadoras',mop:'mops',lixeira:'mops',
+  lavadora:'lavadoras',mop:'mop',lixeira:'lixeiras',
   perfume:'perfumes',perfumes:'perfumes',skincare:'skincare',barbeador:'cuidados_pessoais',
   creatina:'suplementos',whey:'suplementos',suplemento:'suplementos',suplementos:'suplementos',
   furadeira:'ferramentas',parafusadeira:'ferramentas',motosserra:'ferramentas',
