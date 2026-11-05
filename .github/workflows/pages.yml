@@ -159,7 +159,7 @@ jobs:
           d.text((885,565), "RADAR DE OFERTAS BR", font=font(13), fill=muted)
           Path("_site/social-preview.png").parent.mkdir(parents=True, exist_ok=True)
           bg.convert("RGB").save("_site/social-preview.png", "PNG", optimize=True)
-          print("Banner social gerado com", min(len(image_paths), len(cards)), "fotos do catálogo.")
+          print("Banner social gerado com", min(len(product_images), len(cards)), "fotos do catálogo.")
           PY
       - name: Configurar Pages
         uses: actions/configure-pages@v5
