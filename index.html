@@ -220,11 +220,11 @@ let products=[];
 let activeCategory='todas';
 const CATEGORY_LABELS={calcados:'Calçados',roupas:'Roupas',eletronicos:'Eletrônicos',casa:'Casa',cozinha:'Cozinha',limpeza:'Limpeza',beleza:'Beleza',esporte:'Esporte',ferramentas:'Ferramentas',automotivo:'Automotivo',natal:'Natal',outros:'Outros'};
 const CATEGORY_ALIASES={
-  'tenis':'calcados','calcado':'calcados','calcados':'calcados','sapato':'calcados','sapatos':'calcados','chinelo':'calcados','chinelos':'calcados','bota':'calcados','botas':'calcados','sandalia':'calcados','sapatilha':'calcados',
-  'roupa':'roupas','roupas':'roupas','vestuario':'roupas','vestuario':'roupas','calca':'roupas','calcas':'roupas','camiseta':'roupas','camisetas':'roupas','camisa':'roupas','camisas':'roupas','bermuda':'roupas','bermudas':'roupas','short':'roupas','shorts':'roupas','legging':'roupas','leggings':'roupas','meia':'roupas','meias':'roupas','cueca':'roupas','cuecas':'roupas','calcinha':'roupas','calcinhas':'roupas','blusa':'roupas','blusas':'roupas','sutia':'roupas','sutias':'roupas','top':'roupas','tops':'roupas',
-  'eletronico':'eletronicos','eletronicos':'eletronicos','fone':'eletronicos','fones':'eletronicos','carregador':'eletronicos','carregadores':'eletronicos','celular':'eletronicos','celulares':'eletronicos','cabo':'eletronicos','cabos':'eletronicos','powerbank':'eletronicos','relogio':'eletronicos','relogios':'eletronicos',
-  'casa':'casa','limpeza':'limpeza','mop':'limpeza','aspirador':'limpeza','aspiradores':'limpeza','cozinha':'cozinha','panela':'cozinha','panelas':'cozinha','frigideira':'cozinha','frigideiras':'cozinha',
-  'beleza':'beleza','perfume':'beleza','perfumes':'beleza','skincare':'beleza','esporte':'esporte','esportes':'esporte','suplemento':'esporte','suplementos':'esporte','creatina':'esporte','whey':'esporte','ferramenta':'ferramentas','ferramentas':'ferramentas','furadeira':'ferramentas','parafusadeira':'ferramentas','automotivo':'automotivo','carro':'automotivo','natal':'natal','iluminacao':'natal'
+  // Apenas nomes de categorias amplas acionam a categoria inteira.
+  'calcado':'calcados','calcados':'calcados','roupa':'roupas','roupas':'roupas','vestuario':'roupas',
+  'eletronico':'eletronicos','eletronicos':'eletronicos','casa':'casa','limpeza':'limpeza','cozinha':'cozinha',
+  'beleza':'beleza','esporte':'esporte','esportes':'esporte','ferramenta':'ferramentas','ferramentas':'ferramentas',
+  'automotivo':'automotivo','natal':'natal'
 };
 function categoriaProduto(nome){
   const n=normalizar(nome);
