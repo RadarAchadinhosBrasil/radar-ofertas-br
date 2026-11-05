@@ -93,6 +93,7 @@
     <button class="category-chip" type="button" data-category="automotivo" aria-pressed="false">Automotivo</button>
     <button class="category-chip" type="button" data-category="natal" aria-pressed="false">Natal</button>
   </nav>
+  <nav class="category-filters subcategory-filters" id="subcategoryFilters" aria-label="Filtrar ofertas por nicho" hidden></nav>
   <div class="grid" id="products"><article class="product"><div class="photo"><span class="tag">-65% OFF</span><img loading="lazy" src="https://http2.mlstatic.com/D_NQ_NP_951617-MLB110943565198_052026-O.webp" alt="Parafusadeira Furadeira 48v Profissional 2 Baterias Sem Fio" onerror="this.remove()"><span class="watermark">RADAR DE OFERTAS BR</span></div><div class="product-info"><div class="product-name">Parafusadeira Furadeira 48v Profissional 2 Baterias Sem Fio</div><div class="old">De R$ 299,90</div><div class="price">R$ 104,31</div><a class="buy" href="https://meli.la/19b9vc7" target="_blank" rel="nofollow sponsored noopener">VER OFERTA NO MERCADO LIVRE ↗</a></div></article>
 <article class="product"><div class="photo"><span class="tag">-38% OFF</span><img loading="lazy" src="https://http2.mlstatic.com/D_NQ_NP_887864-MLB108264754941_032026-O.webp" alt="Perfume Club De Nuit Intense Da Armaf EDT 105ml Masculino" onerror="this.remove()"><span class="watermark">RADAR DE OFERTAS BR</span></div><div class="product-info"><div class="product-name">Perfume Club De Nuit Intense Da Armaf EDT 105ml Masculino</div><div class="old">De R$ 319,00</div><div class="price">R$ 197,72</div><a class="buy" href="https://meli.la/28XGvKf" target="_blank" rel="nofollow sponsored noopener">VER OFERTA NO MERCADO LIVRE ↗</a></div></article>
 <article class="product"><div class="photo"><span class="tag">-34% OFF</span><img loading="lazy" src="https://http2.mlstatic.com/D_NQ_NP_750670-MLA118429558724_102026-O.webp" alt="Philips OneBlade Aparador e Barbeador Elétrico 5 em 1 QP1425/10" onerror="this.remove()"><span class="watermark">RADAR DE OFERTAS BR</span></div><div class="product-info"><div class="product-name">Philips OneBlade Aparador e Barbeador Elétrico 5 em 1 QP1425/10</div><div class="old">De R$ 212,38</div><div class="price">R$ 139,99</div><a class="buy" href="https://meli.la/2dHzWd1" target="_blank" rel="nofollow sponsored noopener">VER OFERTA NO MERCADO LIVRE ↗</a></div></article>
@@ -218,15 +219,23 @@ function parseCSV(text){const rows=[];let row=[],field='',quoted=false;for(let i
 function money(v){const n=Number(String(v||'').replace(',','.'));return Number.isFinite(n)&&n>0?n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}):''}
 let products=[];
 let activeCategory='todas';
-const CATEGORY_LABELS={calcados:'Calçados',roupas:'Roupas',eletronicos:'Eletrônicos',casa:'Casa',cozinha:'Cozinha',limpeza:'Limpeza',beleza:'Beleza',esporte:'Esporte',ferramentas:'Ferramentas',automotivo:'Automotivo',natal:'Natal',outros:'Outros'};
+const CATEGORY_LABELS={calcados:'Calçados',roupas:'Moda',eletronicos:'Eletrônicos',casa:'Casa',cozinha:'Cozinha',limpeza:'Limpeza',beleza:'Beleza',esporte:'Esporte e Fitness',ferramentas:'Ferramentas',automotivo:'Automotivo',natal:'Natal'};
 const CATEGORY_ALIASES={
-  // Buscas genéricas devem trazer toda a categoria, não só títulos com a palavra digitada.
-  'calcado':'calcados','calcados':'calcados',
-  'roupa':'roupas','roupas':'roupas','vestuario':'roupas','moda':'roupas',
-  'eletronico':'eletronicos','eletronicos':'eletronicos',
-  'casa':'casa','limpeza':'limpeza','produto limpeza':'limpeza','produtos limpeza':'limpeza','produtos de limpeza':'limpeza',
-  'cozinha':'cozinha','beleza':'beleza','esporte':'esporte','esportes':'esporte',
+  'calcado':'calcados','calcados':'calcados','roupa':'roupas','roupas':'roupas','moda':'roupas','vestuario':'roupas',
+  'eletronico':'eletronicos','eletronicos':'eletronicos','casa':'casa','cozinha':'cozinha',
+  'limpeza':'limpeza','produto limpeza':'limpeza','produtos limpeza':'limpeza','produtos de limpeza':'limpeza',
+  'beleza':'beleza','esporte':'esporte','esportes':'esporte','fitness':'esporte',
   'ferramenta':'ferramentas','ferramentas':'ferramentas','automotivo':'automotivo','natal':'natal'
+};
+const NICHE_LABELS={
+  tenis:'Tênis',chinelos:'Chinelos',botas:'Botas',sapatos:'Sapatos',
+  camisetas:'Camisetas',calcas:'Calças',bermudas:'Bermudas e shorts',moda_intima:'Moda íntima',fitness:'Roupas fitness',bolsas:'Bolsas e mochilas',
+  audio:'Fones e áudio',carregadores:'Carregadores e cabos',energia:'Power banks e energia',relogios:'Relógios',acessorios_celular:'Acessórios para celular',
+  cama:'Cama e colchões',decoracao:'Decoração',ventilacao:'Ventiladores',utilidades_casa:'Utilidades para casa',
+  panelas:'Panelas',eletroportateis:'Eletroportáteis',utensilios:'Utensílios de cozinha',
+  aspiradores:'Aspiradores',lavadoras:'Lavadoras',mops:'Mops e acessórios de limpeza',
+  perfumes:'Perfumes',skincare:'Skincare',cuidados_pessoais:'Cuidados pessoais',
+  suplementos:'Suplementos',calcados_esportivos:'Tênis esportivos',ferramentas:'Ferramentas',automotivo:'Acessórios automotivos',natal:'Decoração de Natal'
 };
 function categoriaProduto(nome){
   const n=normalizar(nome);
@@ -243,29 +252,97 @@ function categoriaProduto(nome){
   if(/\b(ventilador|purificador|colchao|travesseiro|cortina|espelho|jogo de cama|capa protetora colchao|bolsa|mochila)\b/.test(n))return 'casa';
   return 'outros';
 }
+function nichoProduto(nome){
+  const n=normalizar(nome);
+  if(/\b(tenis|sapatênis)\b/.test(n))return 'tenis';
+  if(/\b(chinelo|sandalia)\b/.test(n))return 'chinelos';
+  if(/\b(bota|galocha)\b/.test(n))return 'botas';
+  if(/\b(sapato|mocassim|loafer)\b/.test(n))return 'sapatos';
+  if(/\b(camiseta|camisa|polo|blusa)\b/.test(n))return 'camisetas';
+  if(/\b(calca|legging)\b/.test(n))return 'calcas';
+  if(/\b(bermuda|short)\b/.test(n))return 'bermudas';
+  if(/\b(cueca|calcinha|sutia|cinta)\b/.test(n))return 'moda_intima';
+  if(/\b(top|dryfit|fitness|academia)\b/.test(n))return 'fitness';
+  if(/\b(bolsa|mochila)\b/.test(n))return 'bolsas';
+  if(/\b(fone|headphone|headset)\b/.test(n))return 'audio';
+  if(/\b(carregador|cabo carregador)\b/.test(n))return 'carregadores';
+  if(/\b(power bank|extensao|filtro de linha)\b/.test(n))return 'energia';
+  if(/\b(relogio)\b/.test(n))return 'relogios';
+  if(/\b(magsafe|capa.*iphone)\b/.test(n))return 'acessorios_celular';
+  if(/\b(travesseiro|colchao|jogo de cama|capa protetora colchao)\b/.test(n))return 'cama';
+  if(/\b(espelho|cortina)\b/.test(n))return 'decoracao';
+  if(/\b(ventilador)\b/.test(n))return 'ventilacao';
+  if(/\b(purificador|utilidade)\b/.test(n))return 'utilidades_casa';
+  if(/\b(panela|frigideira)\b/.test(n))return 'panelas';
+  if(/\b(mixer|sanduicheira|chaleira)\b/.test(n))return 'eletroportateis';
+  if(/\b(pipoqueira|tapioqueira|porta temperos|escorredor|faqueiro|talheres|copo termico|pano de prato)\b/.test(n))return 'utensilios';
+  if(/\b(aspirador|extratora)\b/.test(n))return 'aspiradores';
+  if(/\b(lavadora|desobstruidora)\b/.test(n))return 'lavadoras';
+  if(/\b(mop|lixeira|papa bolinha)\b/.test(n))return 'mops';
+  if(/\b(perfume)\b/.test(n))return 'perfumes';
+  if(/\b(skincare|principia)\b/.test(n))return 'skincare';
+  if(/\b(barbeador|aparador|oneblade)\b/.test(n))return 'cuidados_pessoais';
+  if(/\b(creatina|whey|proteina|pre treino)\b/.test(n))return 'suplementos';
+  if(/\b(furadeira|parafusadeira|motosserra|serra)\b/.test(n))return 'ferramentas';
+  if(/\b(automotiva|lavagem automotiva|motoqueiro)\b/.test(n))return 'automotivo';
+  if(/\b(natal|arvore de natal|pisca|cascata|led|fios de fada)\b/.test(n))return 'natal';
+  if(/\b(tenis)\b/.test(n)&&/\b(corrida|caminhada|academia)\b/.test(n))return 'calcados_esportivos';
+  return 'outros';
+}
+const NICHE_ALIASES={
+  tenis:'tenis',sapatênis:'tenis','tenis de corrida':'tenis','tenis masculino':'tenis','tenis feminino':'tenis',
+  chinelo:'chinelos',chinelos:'chinelos',bota:'botas',botas:'botas',sapato:'sapatos',mocassim:'sapatos',
+  camiseta:'camisetas',camisetas:'camisetas',camisa:'camisetas',polo:'camisetas',
+  calca:'calcas',calcas:'calcas',legging:'calcas',bermuda:'bermudas',short:'bermudas',
+  cueca:'moda_intima',calcinha:'moda_intima',sutia:'moda_intima',
+  'roupa fitness':'fitness','roupas fitness':'fitness',top:'fitness',
+  bolsa:'bolsas',mochila:'bolsas',
+  fone:'audio',fones:'audio',headphone:'audio',headset:'audio',
+  carregador:'carregadores',carregadores:'carregadores',cabo:'carregadores',
+  'power bank':'energia',powerbank:'energia',relogio:'relogios',
+  magsafe:'acessorios_celular',iphone:'acessorios_celular',
+  travesseiro:'cama',colchao:'cama','jogo de cama':'cama',cortina:'decoracao',espelho:'decoracao',
+  ventilador:'ventilacao',purificador:'utilidades_casa',
+  panela:'panelas',panelas:'panelas',frigideira:'panelas',
+  mixer:'eletroportateis',sanduicheira:'eletroportateis',chaleira:'eletroportateis',
+  utensilio:'utensilios',utensilios:'utensilios',faqueiro:'utensilios',
+  aspirador:'aspiradores',aspiradores:'aspiradores',extratora:'aspiradores',
+  lavadora:'lavadoras',mop:'mops',lixeira:'mops',
+  perfume:'perfumes',perfumes:'perfumes',skincare:'skincare',barbeador:'cuidados_pessoais',
+  creatina:'suplementos',whey:'suplementos',suplemento:'suplementos',suplementos:'suplementos',
+  furadeira:'ferramentas',parafusadeira:'ferramentas',motosserra:'ferramentas',
+  automotivo:'automotivo','lavagem automotiva':'automotivo',natal:'natal','decoracao de natal':'natal'
+};
 function palavrasBusca(s){return normalizar(s).split(' ').filter(p=>p.length>1&&!['de','da','do','das','dos','para','com','e','em','no','na','um','uma'].includes(p))}
 function palavraConfere(nome,termo){
   const tokens=normalizar(nome).split(' ');
   if(tokens.includes(termo))return true;
-  // Flexão simples singular/plural sem aceitar palavras apenas parecidas (ex.: tênis/sapatênis).
   if(termo.endsWith('s'))return tokens.includes(termo.slice(0,-1));
   return tokens.includes(termo+'s')||tokens.includes(termo+'es');
 }
 function scoreBusca(nome,consulta){
   const busca=normalizar(consulta);
   if(!busca)return 1;
-  // Categorias e sinônimos amplos: "tênis" e "calçados" mostram todos os calçados.
-  const categoria=CATEGORY_ALIASES[busca];
-  if(categoria)return categoriaProduto(nome)===categoria?1:0;
-  // Marca e nome: Nike, adidas, Puma, Philips etc. procuram em todos os títulos.
+  if(CATEGORY_ALIASES[busca])return categoriaProduto(nome)===CATEGORY_ALIASES[busca]?1:0;
+  if(NICHE_ALIASES[busca])return nichoProduto(nome)===NICHE_ALIASES[busca]?1:0;
   const termos=palavrasBusca(busca);
   if(!termos.length)return 1;
   return termos.every(t=>palavraConfere(nome,t))?termos.length:0;
 }
+function atualizarSubcategorias(){
+  const nav=$('#subcategoryFilters');
+  const cat=activeCategory;
+  if(cat==='todas'){nav.hidden=true;nav.innerHTML='';return;}
+  const opcoes=[...new Set(products.filter(p=>categoriaProduto(p.produto)===cat).map(p=>nichoProduto(p.produto)))].filter(n=>NICHE_LABELS[n]);
+  if(!opcoes.length){nav.hidden=true;nav.innerHTML='';return;}
+  nav.hidden=false;
+  nav.innerHTML='<button class="category-chip active" type="button" data-niche="todos" aria-pressed="true">Todos do nicho</button>'+opcoes.map(n=>'<button class="category-chip" type="button" data-niche="'+n+'" aria-pressed="false">'+NICHE_LABELS[n]+'</button>').join('');
+}
+let activeNiche='todos';
 function render(){
   const term=$('#search').value.trim(),sort=$('#sort').value;
   let list=products.map(p=>({...p,_category:categoriaProduto(p.produto),_score:scoreBusca(p.produto,term)}))
-    .filter(p=>p._score>0&&(activeCategory==='todas'||p._category===activeCategory));
+    .filter(p=>p._score>0&&(activeCategory==='todas'||p._category===activeCategory)&&(activeNiche==='todos'||nichoProduto(p.produto)===activeNiche));
   if(sort==='low')list.sort((a,b)=>Number(a.preco_atual_brl)-Number(b.preco_atual_brl));
   else if(sort==='az')list.sort((a,b)=>a.produto.localeCompare(b.produto,'pt-BR'));
   else if(sort==='discount')list.sort((a,b)=>discount(b)-discount(a));
@@ -279,8 +356,14 @@ function render(){
 }
 $('#categoryFilters').addEventListener('click',e=>{
   const btn=e.target.closest('button[data-category]');if(!btn)return;
-  activeCategory=btn.dataset.category;
+  activeCategory=btn.dataset.category;activeNiche='todos';
   $('#categoryFilters').querySelectorAll('.category-chip').forEach(b=>{const active=b===btn;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active))});
+  atualizarSubcategorias();render();
+});
+$('#subcategoryFilters').addEventListener('click',e=>{
+  const btn=e.target.closest('button[data-niche]');if(!btn)return;
+  activeNiche=btn.dataset.niche;
+  $('#subcategoryFilters').querySelectorAll('.category-chip').forEach(b=>{const active=b===btn;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active))});
   render();
 });
 async function buscarFoto(p,i){const holder=document.querySelector('[data-photo="'+i+'"]');if(!holder)return;try{const url='https://api.mercadolibre.com/sites/MLB/search?q='+encodeURIComponent(p.produto)+'&limit=5';const r=await fetch(url);if(!r.ok)throw Error('Busca indisponível');const data=await r.json();const tokens=s=>normalizar(s).split(' ').filter(x=>x.length>2);const wanted=tokens(p.produto);const ranked=(data.results||[]).map(item=>{const got=tokens(item.title||'');const score=wanted.filter(t=>got.includes(t)).length/Math.max(wanted.length,1);return {item,score}}).sort((a,b)=>b.score-a.score);const best=ranked[0];if(!best||best.score<0.35)throw Error('Sem correspondência segura');const src=(best.item.thumbnail||best.item.pictures?.[0]?.url||'').replace(/^http:/,'https:');if(!src)throw Error('Sem foto');const img=document.createElement('img');img.loading='lazy';img.alt=p.produto;img.src=src;img.onerror=()=>{holder.classList.add('image-error');holder.textContent='';};holder.replaceWith(img)}catch(e){holder.textContent='Foto indisponível';holder.style.color='#777';holder.style.fontSize='11px'}}
