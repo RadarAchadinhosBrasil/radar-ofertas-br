@@ -81,12 +81,21 @@ jobs:
 
           echo "value=$SLOT" >> "$GITHUB_OUTPUT"
 
+      - name: Testar legenda e hashtags sem publicar
+        if: github.event_name == 'workflow_dispatch' && inputs.acao == 'preview'
+        env:
+          IG_ACTION: preview
+          SLOT_UTC: ${{ steps.slot.outputs.value }}
+        run: python publicar_instagram.py
+
       - name: Converter imagem do produto para JPG
+        if: github.event_name != 'workflow_dispatch' || inputs.acao == 'publicar'
         env:
           SLOT_UTC: ${{ steps.slot.outputs.value }}
         run: python preparar_imagens_instagram.py
 
       - name: Montar site preservando o painel e catálogo
+        if: github.event_name != 'workflow_dispatch' || inputs.acao == 'publicar'
         run: |
           python - <<'PY'
           import csv, hashlib, urllib.request
@@ -151,18 +160,22 @@ jobs:
           PY
 
       - name: Configurar GitHub Pages
+        if: github.event_name != 'workflow_dispatch' || inputs.acao == 'publicar'
         uses: actions/configure-pages@v5
 
       - name: Enviar site e imagem JPG para Pages
+        if: github.event_name != 'workflow_dispatch' || inputs.acao == 'publicar'
         uses: actions/upload-pages-artifact@v3
         with:
           path: _site
 
       - name: Publicar site no GitHub Pages
+        if: github.event_name != 'workflow_dispatch' || inputs.acao == 'publicar'
         id: deployment
         uses: actions/deploy-pages@v4
 
       - name: Validar imagem pública
+        if: github.event_name != 'workflow_dispatch' || inputs.acao == 'publicar'
         env:
           PAGES_URL: ${{ steps.deployment.outputs.page_url }}
         run: |
@@ -189,6 +202,7 @@ jobs:
           PY
 
       - name: Diagnosticar token e permissões da Meta (sem exibir o token)
+        if: github.event_name != 'workflow_dispatch' || inputs.acao == 'publicar'
         if: github.event_name == 'schedule' || inputs.acao == 'publicar'
         env:
           IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
